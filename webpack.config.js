@@ -2,6 +2,7 @@ let path = require("path");
 let HtmlWebpackPlugin = require("html-webpack-plugin");
 let MiniCssExtract = require('mini-css-extract-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const webpack = require("webpack");
 
 const fs = require('fs')
 const glob = require('glob')
@@ -90,6 +91,14 @@ module.exports = {
 
         //vue相关
         new VueLoaderPlugin(),
+
+
+        // short-circuits all Vue.js warning code
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: '"production"'
+            }
+        }),
     ],
     module: {
         rules: [
