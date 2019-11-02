@@ -66,12 +66,11 @@ module.exports = {
     }, {}),
     output: {
         filename: "[name].js",
-        path: path.resolve(__dirname, "dist")
+        path: path.resolve(__dirname, "dist"),
+        libraryTarget: 'umd',
+        umdNamedDefine: true
     },
     resolve: {
-        alias: {
-            'vue': 'vue/dist/vue.esm.js'
-        },
         extensions: ['*', '.js', '.vue', '.json']
     },
     plugins: [
@@ -147,12 +146,12 @@ module.exports = {
             {
                 test: /\.vue$/,
                 use: [
-                    // {
-                    //     loader: 'cache-loader'
-                    // },
-                    // {
-                    //     loader: 'thread-loader'
-                    // },
+                    {
+                        loader: 'cache-loader'
+                    },
+                    {
+                        loader: 'thread-loader'
+                    },
                     {
                         loader: 'vue-loader',
                         options: {
