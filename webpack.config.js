@@ -59,13 +59,19 @@ module.exports = {
     },
     // mode: "development",
     mode: "production",
-    entry: Object.values(getFiles("src/**/*.+(js|vue)")).reduce((ret, el) => {
+    entry: Object.values(getFiles("src/**/*.+(js)")).reduce((ret, el) => {
         ret[el.entryName] = el.filePath;
         return ret;
     }, {}),
     output: {
         filename: "[name].js",
         path: path.resolve(__dirname, "dist")
+    },
+    resolve: {
+        alias: {
+            'vue$': 'vue/dist/vue.esm.js'
+        },
+        extensions: ['*', '.js', '.vue', '.json']
     },
     plugins: [
         // new HtmlWebpackPlugin({

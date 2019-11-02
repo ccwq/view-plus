@@ -73,53 +73,36 @@
                     )
 </template>
 <script>
-    import Vue from "vue";
     import Utils from "../Utils";
-
     const {
         isPlainObject,
         parseDate,
     } = Utils;
 
-    let div = document.createElement("div");
-    document.body.appendChild(div);
-    var tl = new Vue({
-        name: "text-length-compute",
-        methods: {
 
-            /**
-             * 获取某段文字在特定容器下的大小
-             * @param text
-             * @param targetDom
-             */
-            get(text, targetDom) {
-                const m = this;
-                let elel = m.$refs.elel;
-                elel.style.fnotSize = getComputedStyle(targetDom).fontSize;
-                elel.innerText = text;
-                return elel.offsetWidth;
-            }
-        },
-        render(h){
-            return h(
-                "div",
-                {
-                    class:"text-length-compute-comp",
-                    style: ` position: fixed; top: -100%; left: -100%; width: 0; height: 0; overflow: hidden; `
-                },
-                [
-                    h(
-                        "span",
-                        {
-                            ref: "elel",
-                            style: `display: inline-block; white-space: nowrap`
-                        }
-                    )
-                ]
-            )
+    /**
+     * 文本宽度计算
+     * @type {function(*, *=): number}
+     */
+    const getTextWidth = (_=>{
+        let div = document.createElement("div");
+        div.innerHTML = `
+            <div
+                class="text-length-compute-comp"
+                style ="position: fixed; top: -100%; left: -100%; width: 0; height: 0; overflow: hidden;"
+            >
+                <span style="display: inline-block; white-space: nowrap" ></span>
+            </div>
+        `;
+        document.body.appendChild(div.childNodes[0]);
+
+        return function(text, targetDom){
+            let elel = div.childNodes[0].childNodes[0];
+            elel.style.fnotSize = getComputedStyle(targetDom).fontSize;
+            elel.innerText = text;
+            return elel.offsetWidth;
         }
-    }).$mount(div);
-
+    })();
 
     export default {
         name: "co-form",
@@ -370,7 +353,7 @@
 
                 let maxLength = 0;
                 m.items_clone.map(item=>{
-                    let width = tl.get(item.label, m.$refs.form.$el);
+                    let width = getTextWidth(item.label, m.$refs.form.$el);
                     if (width > maxLength) {
                         maxLength = width;
                     }
