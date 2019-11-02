@@ -7,19 +7,26 @@
     ).co-form-comp
         template(v-for="item, index in items_clone_filtered")
 
+            span.hide.form-item-placeholder(
+                v-show="item.hideWhen(form)"
+                :class="[ 'item-prop-placeholder-' + item.prop]"
+            )
+
             //自定义表单内容
             template(v-if="item.render")
                 render(:render="item.render" :item="item" :items="items_clone" :form="form")
-
             FormItem(
                 v-else
                 :prop="item.prop"
                 :label="item.label"
+                v-show="!item.hideWhen(form)"
+                :class="[ 'item-prop-' + item.prop]"
             )
                 template(v-if="/^(text|textarea|password|)$/.test(item.type)")
                     Input(
                         :type="item.type"
-                        v-model="form[item.prop]"
+                        :value="form[item.prop]"
+                        @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
                     )
@@ -27,19 +34,19 @@
                     DatePicker(
                         transfer
                         :value="_dateTransform(form[item.prop])"
-                        @input="form[item.prop] = _dateTransform($event, 'Number')"
+                        @input="formChangeHandler(item, _dateTransform($event, 'Number'))"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
                     )
                 template(v-if="/^(number|int)$/.test(item.type)")
                     InputNumber(
                         :value="_numberTransform(form[item.prop])"
-                        @input="form[item.prop]=$event"
+                        @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
                     )
                 template(v-else-if="item.type==='select'")
-                    Select(v-model="form[item.prop]" v-bind="item.attrs" transfer)
+                    Select(:value="form[item.prop]" @input="formChangeHandler(item, $event)" v-bind="item.attrs" transfer)
                         Option(
                             v-for="opt,index in item.options"
                             :key="index"
@@ -52,8 +59,9 @@
                         v-bind="item.attrs"
                         :true-value="item.trueValue"
                         :false-value="item.falseValue"
-                        v-model="form[item.prop]"
-                    ) {{booleanCheckLabelTransf(item, form[item.prop])}}
+                        :value='form[item.prop]'
+                        @input="formChangeHandler(item, $event)"
+                    ): span {{booleanCheckLabelTransf(item, form[item.prop])}}
 
                 template(v-else)
                     slot(
@@ -61,10 +69,17 @@
                         :item="item"
                         :form="form"
                         :all-items="items_clone"
+                        :formChangeHandler="formChangeHandler.bind(null, item)"
                     )
 </template>
 <script>
     import Vue from "vue";
+    import Utils from "../Utils";
+
+    const {
+        isPlainObject,
+        parseDate,
+    } = Utils;
 
     let div = document.createElement("div");
     document.body.appendChild(div);
@@ -227,33 +242,63 @@
                 })
                 return ret;
             },
+
+            //扁平的表单
+            //表单项支持定义复合表单域
+            plainForm(){
+                const m = this;
+                let form = {...m.form};
+                m.items_clone.filter(item=>item.originProp).forEach(item=>{
+                    delete form[item.prop]
+                })
+                return form;
+            }
         },
         watch:{
 
             //填充表单
-            value(model) {
-                const m = this;
-                if (model) {
-                    let form = Object.assign({}, m.form);
-                    Object.keys(model).forEach(key=>{
-                        form[key] = model[key];
-                    })
-                    m.form = form;
+            value:{
+                immediate: true,
+                async handler(model) {
+                    const m = this;
+                    if (model) {
+                        await m.$nextTick();
+                        let form = Object.assign({}, m.form);
+
+                        m.items_clone.forEach(item=>{
+                            let key = item.prop;
+                            //多字段表单项
+                            if (Array.isArray(key)) {
+                                key = key.join(",");
+                                form[key] = item.prop.reduce((v, skey) => {
+                                    if (typeof model[skey] != "undefined") {
+                                        v[skey] = model[skey];
+                                    }
+                                    return v;
+                                }, {});
+                            }else{
+                                if (typeof model[key] != "undefined") {
+                                    form[key] = model[key];
+                                }
+                            }
+                        })
+
+                        Object.keys(model).forEach(key=>{
+                            form[key] = model[key];
+                        })
+                        m.form = form;
+                    }
                 }
             },
 
 
             //输出
-            form: {
-                deep:true,
-                handler(form, _form) {
-                    //console.log(form, _form);
-
-
-
-                    this.$emit("input", form);
-                }
-            },
+            // form: {
+            //     deep:true,
+            //     handler(form, _form) {
+            //         this.$emit("input", form);
+            //     }
+            // },
 
 
             //为form赋值
@@ -267,6 +312,7 @@
                     items.forEach(item=>{
                         item.type = item.type || "text";
 
+                        item.hideWhen = _=>false;
                         //增加默认属性
                         if (/^(text|textarea|password)$/.test(item.type)) {
 
@@ -277,7 +323,7 @@
                     m.form = items.reduce((form, item)=>{
                         if(item.prop){
                             setDefaultItemValue(item);
-                            form[item.prop] = getDefaultValueByFormItemOption(item);
+                            resetFormValueByItem(form, item);
                         }
 
                         //表单初始化时候执行
@@ -300,6 +346,19 @@
         },
 
         methods: {
+
+            formChangeHandler(item,value) {
+                const m = this;
+                if (item.originProp) {
+                    item.originProp.forEach(key=>{
+                        m.form[key] = value[key];
+                    })
+                }
+                m.form[item.prop] = value;
+
+                //派发表单改变
+                m.$emit("input", m.plainForm);
+            },
 
             //计算最大表单label的宽度
             calcLabelWidth(){
@@ -333,7 +392,7 @@
                         if (!valid) {
                             reject("");
                         }
-                        resolve(m.form);
+                        resolve(m.plainForm);
                     })
                 })
             },
@@ -353,8 +412,8 @@
             //重置为默认值
             resetValues() {
                 const m = this;
-                m.items.forEach((el)=>{
-                    m.form[el.prop] = getDefaultValueByFormItemOption(el);
+                m.items_clone.filter(el=>el.prop).forEach((item)=>{
+                    resetFormValueByItem(m.form, item);
                 })
             },
 
@@ -404,7 +463,7 @@
             booleanCheckLabelTransf(item, value) {
                 if (typeof item.checkboxLabel == "undefined") {
                     return ""
-                }else if (typeof Array.isArray(item.checkboxLabel)) {
+                }else if (Array.isArray(item.checkboxLabel)) {
                     let retIndex = value === item.trueValue ? 0 : 1;
                     return item.checkboxLabel[retIndex];
                 }else{
@@ -456,30 +515,6 @@
 
 
 
-    /**
-     * 创建date
-     * @param str
-     * @returns {Date}
-     */
-    function parseDate(input) {
-
-        //数字或者字符串时间戳
-        if (typeof input == "number" || /^\d+$/.test(input + "")) {
-            return new Date(input * 1);
-
-        //空对象
-        } else if (!input) {
-            return new Date();
-
-        //日期对象
-        }else if (input.constructor == Date) {
-            return input;
-        }
-
-        //日期字符串
-        var parts = input.split(/[-:\sTZ\+年月日时分秒]/);
-        return new Date(parts[0], parts[1] - 1, parts[2], parts[3] || 0, parts[4] || 0, parts[5] || 0);
-    }
 
 
 
@@ -522,6 +557,53 @@
 
         return value;
     }
+
+
+    /**
+     *
+     * @param item
+     * @param form
+     */
+    function resetFormValueByItem(form, item){
+        if(Array.isArray(item.prop)){
+
+            _temp(item.value, item.prop, form);
+
+            item.originProp = item.prop;
+            item.prop = item.originProp.join(",");
+
+            //合并的form值，主要用来进行规则验证
+            form[item.prop] = item.originProp.reduce((ret, key, index)=>{
+                if(Array.isArray(item.value)){
+                    ret[key] = item.value[index];
+                }else if(isPlainObject(item.value)){
+                    ret[key] = item.value[key];
+                }else{
+                    ret[key] = "";
+                }
+                return ret;
+            }, {})
+        }else if(item.originProp){
+            _temp(item.value, item.originProp, form);
+        } else{
+            form[item.prop] = getDefaultValueByFormItemOption(item);
+        }
+
+        function _temp(value, propLs, form){
+            propLs.forEach((key, index)=>{
+                let _value;
+                if (Array.isArray(value)) {
+                    _value = value[index]
+                }else if (isPlainObject(value)){
+                    _value = value[key];
+                }else{
+                    _value = "";
+                    console.warn("表单项初值无效", propLs);
+                }
+                form[key] = _value;
+            })
+        }
+    }
 </script>
 <style lang="less">
     .co-form-comp {
@@ -555,6 +637,7 @@
         &.min-gap{
             .ivu-form-item{
                 margin-bottom: 15px;
+
             }
 
             .ivu-form-item-error-tip{

@@ -30,7 +30,9 @@
         "build": "webpack"
     },
     "dependencies": {
+        "iview": "^3.5.2",
         "lodash": "^4.17.15",
+        "tree-crawl": "^1.0.5",
         "vue": "^2.6.10"
     }
 }
