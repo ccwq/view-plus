@@ -138,12 +138,12 @@ module.exports = {
             {
                 test: /\.vue$/,
                 use: [
-                    {
-                        loader: 'cache-loader'
-                    },
-                    {
-                        loader: 'thread-loader'
-                    },
+                    // {
+                    //     loader: 'cache-loader'
+                    // },
+                    // {
+                    //     loader: 'thread-loader'
+                    // },
                     {
                         loader: 'vue-loader',
                         options: {
