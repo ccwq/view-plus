@@ -97,10 +97,10 @@
         document.body.appendChild(div.childNodes[0]);
 
         return function(text, targetDom){
-            let elel = div.childNodes[0].childNodes[0];
-            elel.style.fnotSize = getComputedStyle(targetDom).fontSize;
-            elel.innerText = text;
-            return elel.offsetWidth;
+            let el = div.firstElementChild.firstElementChild;
+            el.style.fnotSize = getComputedStyle(targetDom).fontSize;
+            el.innerText = text;
+            return el.offsetWidth;
         }
     })();
 
