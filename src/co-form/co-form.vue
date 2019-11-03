@@ -94,10 +94,12 @@
                 <span style="display: inline-block; white-space: nowrap" ></span>
             </div>
         `;
-        document.body.appendChild(div.childNodes[0]);
+
+        div = div.firstElementChild;
+        document.body.appendChild(div);
 
         return function(text, targetDom){
-            let el = div.firstElementChild.firstElementChild;
+            let el = div.firstElementChild;
             el.style.fnotSize = getComputedStyle(targetDom).fontSize;
             el.innerText = text;
             return el.offsetWidth;
