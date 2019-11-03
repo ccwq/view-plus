@@ -339,7 +339,9 @@
                 const m = this;
                 if (item.originProp) {
                     item.originProp.forEach(key=>{
-                        m.form[key] = value[key];
+                        if (key in value) {
+                            m.form[key] = value[key];
+                        }
                     })
                 }
                 m.form[item.prop] = value;
@@ -530,6 +532,7 @@
     function getDefaultValueByFormItemOption(item){
         let value = item.value;
 
+
         //设置默认值
         if (typeof value == "undefined") {
             if (/^(bool|boolean)$/.test(item.type)) {
@@ -610,6 +613,15 @@
 
             .ivu-alert{
                 margin-top: -4em;
+            }
+        }
+
+        .ivu-checkbox{
+            +span{
+                &:after{
+                    content:"";
+                    display: inline-block;
+                }
             }
         }
 
