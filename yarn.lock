@@ -5289,6 +5289,16 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
+view-plus@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.npm.taobao.org/view-plus/download/view-plus-1.1.5.tgz#ea1df49cf93d96ded6f8d028330be55d85f014dc"
+  integrity sha1-6h30nPk9lt7W+NAoMwvlXYXwFNw=
+  dependencies:
+    iview "^3.5.2"
+    lodash "^4.17.15"
+    tree-crawl "^1.0.5"
+    vue "^2.6.10"
+
 vm-browserify@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.0.tgz#bd76d6a23323e2ca8ffa12028dc04559c75f9019"
