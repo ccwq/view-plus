@@ -248,14 +248,16 @@
                     const m = this;
                     if (model) {
                         await m.$nextTick();
+
+                        //复制一个
                         let form = Object.assign({}, m.form);
 
                         m.items_clone.forEach(item=>{
                             let key = item.prop;
                             //多字段表单项
-                            if (Array.isArray(key)) {
-                                key = key.join(",");
-                                form[key] = item.prop.reduce((v, skey) => {
+                            if (item.originProp) {
+                                key = item.key;
+                                form[key] = item.originProp.reduce((v, skey) => {
                                     if (typeof model[skey] != "undefined") {
                                         v[skey] = model[skey];
                                     }
@@ -268,9 +270,10 @@
                             }
                         })
 
-                        Object.keys(model).forEach(key=>{
-                            form[key] = model[key];
-                        })
+                        // Object.keys(model).forEach(key=>{
+                        //     form[key] = model[key];
+                        // })
+
                         m.form = form;
                     }
                 }
