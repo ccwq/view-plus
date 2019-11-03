@@ -72,7 +72,7 @@ export default class  {
                 if (type == "number") {
                     value = parseFloat(value);
                 }else if (/^bool/.test(type)) {
-                    value = value !== "false";
+                    // value = value !== "false";
                 }else if (type == "date") {
                     value = m.parseDate(value);
                 }
