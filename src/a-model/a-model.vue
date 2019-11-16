@@ -5,10 +5,14 @@
         ref="modal"
     )
         slot
-        template(slot="footer")
-            Button(type="warning" @click="cancelHandler" v-if="!noCancel") 取消
-            Button(type="primary" @click="confirmHandler" v-if="!noOk") 确定
-            slot(name="footer")
+        template( slot="footer" )
+            slot(
+                name="footer"
+                :cancel-handler="cancelHandler"
+                :confirm-handler="confirmHandler"
+            )
+                Button(type="warning" @click="cancelHandler" v-if="!noCancel") 取消
+                Button(type="primary" @click="confirmHandler" v-if="!noOk") 确定
 </template>
 <script>
     export default {
