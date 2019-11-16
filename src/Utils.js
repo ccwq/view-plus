@@ -56,8 +56,15 @@ export default class  {
     static text2formItems(formConfigText, {commSett, eachSett}){
         const m = this;
 
+
         if (!formConfigText && !typeof formConfigText=="string") {
             throw "请使用有效的配置"
+        }
+
+
+        //设置是函数的形式
+        if(typeof eachSett == "function"){
+            eachSett = eachSett();
         }
 
         //trim并且删除最后多余的逗号
@@ -92,10 +99,6 @@ export default class  {
                 }
 
 
-                //设置是函数的形式
-                if(typeof eachSett == "function"){
-                    eachSett = eachSett();
-                }
 
                 let _eachSett = eachSett[prop];
 
