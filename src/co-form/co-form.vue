@@ -13,8 +13,23 @@
             )
 
             //自定义表单内容
-            template(v-if="item.render")
+
+
+            //虚拟的值增加字段，没有显示
+            template(v-if="item.virtual")
+                //虚拟的
+            template(v-else-if="item.render")
                 render(:render="item.render" :item="item" :items="items_clone" :form="form")
+
+            //不使用formItem包裹(无法使用验证)
+            template(v-else-if="item.noFormItem")
+                slot(
+                    :name="item.type"
+                    :item="item"
+                    :form="form"
+                    :all-items="items_clone"
+                    :formChangeHandler="formChangeHandler.bind(null, item)"
+                )
             FormItem(
                 v-else
                 :prop="item.prop"
