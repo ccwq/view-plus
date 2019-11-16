@@ -91,6 +91,12 @@ export default class  {
                     item = commSett(item) || item;
                 }
 
+
+                //设置是函数的形式
+                if(typeof eachSett == "function"){
+                    eachSett = eachSett();
+                }
+
                 let _eachSett = eachSett[prop];
 
                 if (typeof _eachSett == "function") {
