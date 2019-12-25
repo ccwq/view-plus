@@ -94,25 +94,38 @@
 
 
         methods: {
+
+            /**
+             * 关闭的实际操作
+             * @private
+             */
             __handlerNext() {
                 const m = this;
                 m.visible=false;
                 m.$emit("input", false);
             },
 
-            confirmHandler() {
+            /**
+             * 确认的处理。支持传入参数到handler
+             * @param params
+             */
+            confirmHandler(...params) {
                 const m = this;
                 if (m.handler) {
-                    m.handler(null, m.__handlerNext);
+                    m.handler(null, m.__handlerNext, ...params);
                 }else{
                     m.__handlerNext();
                 }
             },
 
-            cancelHandler() {
+            /**
+             * 取消的吹，支持传递多余的cancel
+             * @param params
+             */
+            cancelHandler(...params) {
                 const m = this;
                 if (m.handler) {
-                    m.handler(1, m.__handlerNext);
+                    m.handler(1, m.__handlerNext, ...params);
                 }else{
                     m.__handlerNext();
                 }
