@@ -41,6 +41,7 @@
     import Emitter from 'iview/src/mixins/emitter';
     import { findComponentUpward } from 'iview/src/utils/assist';
     import crawl from "tree-crawl";
+    import get from "lodash/get";
 
     const prefixCls = 'ivu-tree';
 
@@ -245,7 +246,9 @@
                 this.appearByClickArrow = true;
 
                 // async loading
-                if (item[this.childrenKey].length === 0) {
+
+
+                if (get(item, [this.childrenKey, "0"])) {
                     const tree = findComponentUpward(this, 'Tree');
                     if (tree && tree.loadData) {
                         this.$set(this.data, 'loading', true);
@@ -260,7 +263,7 @@
                     }
                 }
 
-                if (item[this.childrenKey] && item[this.childrenKey].length) {
+                if (get(item, [this.childrenKey, "length"])) {
                     this.$set(this.data, 'expand', !this.data.expand);
                     this.dispatch('Tree', 'toggle-expand', this.data);
                 }
