@@ -312,7 +312,7 @@
                     let __items = items;
 
                     if (!__items) {
-                        return;
+                        return console.warn("表单配置不能为空");
                     }
 
                     if (typeof __items == "function") {
@@ -320,12 +320,21 @@
                     }
 
                     if (!__items) {
-                        return;
+                        return console.warn("表单配置不能为空");
                     }
 
                     if (__items.then) {
                         __items = await __items;
                     }
+
+                    if (!__items) {
+                        return console.warn("表单配置不能为空");
+                    }
+
+                    if (!Array.isArray(__items)) {
+                        return console.warn("表单配置需要为数组");
+                    }
+
 
                     items = __items;
 

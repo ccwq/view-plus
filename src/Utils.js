@@ -108,6 +108,17 @@ export default class  {
                     item = Object.assign(item,_eachSett);
                 }
 
+
+                //下拉选项类型处理
+                if (Array.isArray(item.options)) {
+                    item.options = item.options.map(el=>{
+                        if (Array.isArray(el)) {
+                           let [value, name] = el;
+                           return {value, name}
+                        }
+                        return el;
+                    })
+                }
                 ret.push(item);
                 return ret;
             }, [])
