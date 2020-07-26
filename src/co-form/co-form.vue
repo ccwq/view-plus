@@ -169,7 +169,7 @@
 
             //表单项
             items:{
-                type:Array,
+                type:[Array, Promise, Function],
                 default(){
                     return [
                         {
@@ -212,7 +212,7 @@
             rules() {
                 const m = this;
                 let ret = {};
-                m.items.forEach(item=>{
+                m.items_clone.forEach(item=>{
                     if (item.validators) {
                         ret[item.prop] = transformValidator.call(m, item.validators );
                     }
@@ -308,8 +308,26 @@
             items:{
                 immediate: true,
                 async handler(items){
-
                     const m = this;
+                    let __items = items;
+
+                    if (!__items) {
+                        return;
+                    }
+
+                    if (typeof __items == "function") {
+                        __items = __items(m);
+                    }
+
+                    if (!__items) {
+                        return;
+                    }
+
+                    if (__items.then) {
+                        __items = await __items;
+                    }
+
+                    items = __items;
 
                     //设置默认text，并且进行复制
                     items.forEach(item=>{
