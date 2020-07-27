@@ -95,7 +95,10 @@ export default class  {
                 })
 
                 if (commSett) {
-                    item = commSett(item) || item;
+                    item = {
+                        ...commSett(item),
+                        ...item
+                    };
                 }
 
 
