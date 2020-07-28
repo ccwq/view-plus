@@ -44,6 +44,7 @@
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
+                        :class="item.itemClass"
                     )
                 template(v-if="/^(date)$/.test(item.type)")
                     DatePicker(
@@ -52,6 +53,7 @@
                         @input="formChangeHandler(item, _dateTransform($event, 'Number'))"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
+                        :class="item.itemClass"
                     )
                 template(v-if="/^(number|int)$/.test(item.type)")
                     InputNumber(
@@ -59,9 +61,16 @@
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
+                        :class="item.itemClass"
                     )
                 template(v-else-if="item.type==='select'")
-                    Select(:value="form[item.prop]" @input="formChangeHandler(item, $event)" v-bind="item.attrs" transfer)
+                    Select(
+                        :value="form[item.prop]"
+                        @input="formChangeHandler(item, $event)"
+                        v-bind="item.attrs"
+                        transfer
+                        :class="item.itemClass"
+                    )
                         Option(
                             v-for="opt,index in item.options"
                             :key="index"
@@ -76,6 +85,7 @@
                         :false-value="item.falseValue"
                         :value='form[item.prop]'
                         @input="formChangeHandler(item, $event)"
+                        :class="item.itemClass"
                     ): span {{booleanCheckLabelTransf(item, form[item.prop])}}
 
                 template(v-else)

@@ -75,7 +75,8 @@ export default class  {
             .filter(el=>(el && !el.startsWith("//")))
             .map(el=>el.trim().split(/\s+/))
             .reduce((ret, [prop, type, label, value])=>{
-
+                let [_type, ...itemClass] = type.split(".");
+                type = _type;
                 if (type == "number") {
                     value = parseFloat(value);
                 }else if (/^bool/.test(type)) {
@@ -85,7 +86,7 @@ export default class  {
                 }
 
 
-                let item = {prop, label, type, value};
+                let item = {prop, label, type, value, itemClass};
 
                 //如果值为单个"-"表示该项不设置
                 Object.keys(item).forEach(key=>{
