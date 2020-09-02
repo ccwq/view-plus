@@ -3,6 +3,7 @@
         v-bind="modalOptions"
         v-on="modalListeners"
         ref="modal"
+        :class="{'protect-content':protectContent}"
     )
         slot
         template( slot="footer" )
@@ -57,7 +58,14 @@
             handler: {
                 type: [Function, String],
                 default:"",
-            }
+            },
+
+
+            //保护内容避免被单击
+            protectContent:{
+                default:false,
+                type:Boolean,
+            },
         },
         computed: {
             modalOptions() {
@@ -141,4 +149,8 @@
 
     }
 </script>
-<style scoped lang="less"></style>
+<style>
+    .a-modal-comp{
+
+    }
+</style>
