@@ -80,8 +80,7 @@
                     )
                 template(v-else-if="item.type==='select'")
                     Select(
-                        :disabled="disabled"
-                        :readonly="readonly"
+                        :disabled="disabled || readonly"
                         :value="form[item.prop]"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
