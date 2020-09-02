@@ -19,11 +19,12 @@
             template(v-if="item.virtual")
                 //虚拟的
             template(v-else-if="item.render")
-                render(:render="item.render" :item="item" :items="items_clone" :form="form")
+                render(:render="item.render" :item="item" :items="items_clone" :form="form" :disabled="disabled")
 
             //不使用formItem包裹(无法使用验证)
             template(v-else-if="item.noFormItem")
                 slot(
+                    :disabled="disabled"
                     :name="item.type"
                     :item="item"
                     :form="form"
@@ -43,12 +44,14 @@
                         :value="form[item.prop]"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
+                        :disabled="disabled"
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
                     )
                 template(v-if="/^(date)$/.test(item.type)")
                     DatePicker(
                         transfer
+                        :disabled="disabled"
                         :value="_dateTransform(form[item.prop])"
                         @input="formChangeHandler(item, _dateTransform($event, 'Number'))"
                         v-bind="item.attrs"
@@ -57,6 +60,7 @@
                     )
                 template(v-if="/^(number|int)$/.test(item.type)")
                     InputNumber(
+                        :disabled="disabled"
                         :value="_numberTransform(form[item.prop])"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
@@ -65,6 +69,7 @@
                     )
                 template(v-else-if="item.type==='select'")
                     Select(
+                        :disabled="disabled"
                         :value="form[item.prop]"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
@@ -80,6 +85,7 @@
                 //布尔
                 template(v-if="/^(bool|boolean)$/.test(item.type)")
                     Checkbox(
+                        :disabled="disabled"
                         v-bind="item.attrs"
                         :true-value="item.trueValue"
                         :false-value="item.falseValue"
@@ -90,6 +96,7 @@
 
                 template(v-else)
                     slot(
+                        :disabled="disabled"
                         :name="item.type"
                         :item="item"
                         :form="form"
@@ -200,6 +207,14 @@
             value:{
                 type:[Object, String],
                 default:""
+            },
+
+
+
+            //禁用所有表单元素
+            disabled: {
+                type: Boolean,
+                default: false,
             },
         },
         computed: {
