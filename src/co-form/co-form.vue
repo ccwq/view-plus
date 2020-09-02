@@ -4,6 +4,7 @@
         :model="form"
         :rules="rules"
         :label-width="labelWidth"
+        :class="{readonly, disabled}"
     ).co-form-comp
         template(v-for="item, index in items_clone_filtered")
 
