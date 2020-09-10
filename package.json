@@ -33,6 +33,7 @@
         "publish patch": "snpm version patch && snpm publish"
     },
     "dependencies": {
+        "ipro": "^1.0.27",
         "iview": "^3.5.2",
         "lodash": "^4.17.15",
         "tree-crawl": "^1.0.5",
