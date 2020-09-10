@@ -5,6 +5,7 @@
         @input="inputHandler"
         :disabled="disabled"
         v-if="!radioMode"
+        v-bind="selectorAttrs"
     )
         Option(
             v-for="el, index in ls"
@@ -41,6 +42,12 @@
         defaultLs:"",
 
         props:{
+
+            //内置属性设置
+            selectorAttrs:{
+                type:Object,
+                default:_=>({}),
+            },
 
 
             //value匹配该值时$emit('input', '')
