@@ -42,6 +42,13 @@
 
         props:{
 
+
+            //value匹配该值时$emit('input', '')
+            blankValueReplacer:{
+                type:[String, RegExp],
+                default:"-",
+            },
+
             //使用radio模式
             radioMode: {
                 default:false,
@@ -99,7 +106,13 @@
                 type:[Function, String],
                 default:"",
             },
-            disabled: {}
+
+
+            //禁用状态
+            disabled: {
+                type:Boolean,
+                default: false,
+            }
         },
 
         watch:{
@@ -202,7 +215,18 @@
 
                 m.val = value;
                 if (value !== void 0) {
-                    m.$emit("input", value);
+
+                    let _value = value;
+                    if (typeof m.blankValueReplacer == "String") {
+                        if (m.blankValueReplacer == _value) {
+                            _value = "";
+                        }
+                    }else if(m.blankValueReplacer instanceof RegExp){
+                        if (m.blankValueReplacer.test(_value)) {
+                            _value = "";
+                        }
+                    }
+                    m.$emit("input", _value);
                 }
             }
         },
