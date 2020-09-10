@@ -232,7 +232,7 @@
                 if (value !== void 0) {
 
                     let _value = value;
-                    if (typeof m.blankValueReplacer == "String") {
+                    if (typeof m.blankValueReplacer == "string") {
                         if (m.blankValueReplacer == _value) {
                             _value = "";
                         }
