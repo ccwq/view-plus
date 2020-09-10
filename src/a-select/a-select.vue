@@ -185,7 +185,15 @@
                 immediate: true,
                 handler(){
                     const m = this;
-                    let valueOption = m?.ls?.find?.(el => el.value == m.val);
+
+                    let value = m.value;
+
+                    //如果value是空，就使用空替代来设置内部value
+                    if (!value && m.blankValueReplacer) {
+                        value = m.blankValueReplacer;
+                    }
+
+                    let valueOption = m?.ls?.find?.(el => el.value == value);
                     if (!valueOption) {
 
                         //对后选值的处理
@@ -195,10 +203,10 @@
                                 m.$emit("input", m.backupValue);
                             }
                         }else{
-                            m.val = m.value + "";
+                            m.val = value + "";
                         }
                     }else{
-                        m.val = m.value + "";
+                        m.val = value + "";
                     }
                 }
             },
