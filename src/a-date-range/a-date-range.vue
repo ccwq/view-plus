@@ -67,7 +67,7 @@ export default {
     props:{
 
         datePickerAttrs:{
-            default:_=({}),
+            default:_=>({}),
             type:Object,
         },
 
