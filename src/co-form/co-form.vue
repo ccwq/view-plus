@@ -45,7 +45,7 @@
                 :prop="item.prop"
                 :label="item.label"
                 v-show="!item.hideWhen(form)"
-                :class="[ 'item-prop-' + item.prop]"
+                :class="[ 'item-prop-' + item.prop, ...item.formItemClass||[]]"
             )
                 template(v-if="/^(text|textarea|password|)$/.test(item.type)")
                     Input(

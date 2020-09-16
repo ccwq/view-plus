@@ -77,6 +77,10 @@ export default class  {
             .reduce((ret, [prop, type, label, value])=>{
                 let [_type, ...itemClass] = type.split(".");
                 type = _type;
+
+                let [_prop, ...formItemClass] = prop.split(".");
+                prop = _prop;
+
                 if (type == "number") {
                     value = parseFloat(value);
                 }else if (/^bool/.test(type)) {
@@ -85,8 +89,7 @@ export default class  {
                     value = m.parseDate(value);
                 }
 
-
-                let item = {prop, label, type, value, itemClass};
+                let item = {prop, label, type, value, itemClass, formItemClass};
 
                 //如果值为单个"-"表示该项不设置
                 Object.keys(item).forEach(key=>{
@@ -101,8 +104,6 @@ export default class  {
                         ...item
                     };
                 }
-
-
 
                 let _eachSett = eachSett[prop];
 
