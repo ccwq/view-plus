@@ -45,7 +45,7 @@
                 :prop="item.prop"
                 :label="item.label"
                 v-show="!item.hideWhen(form)"
-                :class="[ 'item-prop-' + item.prop, ...item.formItemClass||[]]"
+                :class="item.formItemClass"
             )
                 template(v-if="/^(text|textarea|password|)$/.test(item.type)")
                     Input(
@@ -173,7 +173,7 @@
                 // form,
                 labelWidth: 80,
 
-                form:{},
+                form_nature:{},
 
                 items_clone:[],
             }
@@ -238,6 +238,17 @@
             },
         },
         computed: {
+
+            //用来抓取错误
+            form:{
+                set(v){
+                    this.form_nature = v;
+                },
+                get(v){
+                    return this.form_nature;
+                }
+            },
+
             items_clone_filtered() {
                 const m = this;
 
@@ -329,11 +340,6 @@
                                 }
                             }
                         })
-
-                        // Object.keys(model).forEach(key=>{
-                        //     form[key] = model[key];
-                        // })
-
                         m.form = form;
                     }
                 }
@@ -347,7 +353,6 @@
             //         this.$emit("input", form);
             //     }
             // },
-
 
             //为form赋值
             items:{
@@ -384,10 +389,35 @@
                     items = __items;
 
                     //设置默认text，并且进行复制
-                    items.forEach(item=>{
+                    items.forEach((item,index)=>{
                         item.type = item.type || "text";
 
                         item.hideWhen = _=>false;
+
+
+                        let defItemClass = `co-form-input co-input-type-${item.type} co-input-prop-${item.prop}`;
+
+                        if (item.itemClass) {
+                            item.itemClass += ` ${defItemClass}` ;
+                        }else{
+                            item.itemClass = defItemClass;
+                        }
+
+
+                        //2的倍数
+                        let mult2Str = !(index % 2) ? " mult-2" : "";
+
+                        //3的倍数
+                        let mult3Str = !(index % 3) ? " mult-3" : "";
+
+                        let defFormItemClass =`co-item co-item-prop-${item.prop} co-item-type-${item.type} co-item-index-${index}${mult2Str}${mult3Str}`;
+
+                        if (item.formItemClass) {
+                            item.formItemClass += ` ${defFormItemClass}` ;
+                        }else{
+                            item.formItemClass = defFormItemClass;
+                        }
+
                         //增加默认属性
                         if (/^(text|textarea|password)$/.test(item.type)) {
 
@@ -489,9 +519,11 @@
             //重置为默认值
             resetValues() {
                 const m = this;
-                m.items_clone.filter(el=>el.prop).forEach((item)=>{
-                    resetFormValueByItem(m.form, item);
-                })
+                let form = {...m.form};
+                m.items_clone.filter(el => el.prop).forEach((item) => {
+                    resetFormValueByItem(form, item);
+                });
+                m.form = form;
             },
 
             //仅重置验证
@@ -591,11 +623,6 @@
     }
 
 
-
-
-
-
-
     /**
      * 设置item的默认属性
      */
@@ -612,6 +639,7 @@
         }
     }
 
+
     /**
      * 获取默认值
      * @param item
@@ -622,7 +650,7 @@
 
         //设置默认值
         if (typeof value == "undefined") {
-            if (/^(bool|boolean)$/.test(item.type)) {
+            if (/^bool/.test(item.type)) {
                 value = item.falseValue;
             }else if (item.type == "number") {
                 value = 0;
@@ -643,6 +671,8 @@
      * @param form
      */
     function resetFormValueByItem(form, item){
+
+        //prop是数组的情况
         if(Array.isArray(item.prop)){
 
             _temp(item.value, item.prop, form);
@@ -661,11 +691,17 @@
                 }
                 return ret;
             }, {})
+
+        //拥有原始props的情况
         }else if(item.originProp){
             _temp(item.value, item.originProp, form);
+
+        //普通情况
         } else{
-            form[item.prop] = getDefaultValueByFormItemOption(item);
+            let value = getDefaultValueByFormItemOption(item);
+            form[item.prop] = value;
         }
+
 
         function _temp(value, propLs, form){
             propLs.forEach((key, index)=>{
@@ -734,7 +770,7 @@
 
             //最小宽度
             .ivu-input-wrapper, .ivu-select {
-                min-width: 21em;
+                //min-width: 21em;
             }
         }
 
