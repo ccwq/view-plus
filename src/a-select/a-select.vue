@@ -149,6 +149,16 @@
                         }
                     }
 
+                    //以数组为参数
+                    ls = ls.map(el=>{
+                        if (Array.isArray(el)) {
+                            const [value, name] = el;
+                            return {value, name};
+                        }else{
+                            return el;
+                        }
+                    })
+
                     if (typeof m.elFormatter == "function") {
                         ls = ls.map((el)=>{
                             let [value, name] = m.elFormatter(el, {
@@ -161,15 +171,7 @@
                         ls = ls.map(el => ({name: getValue(el, m.nameField), value: getValue(el, m.valueField)}));
                     }
 
-                    //以数组为参数
-                    ls = ls.map(el=>{
-                        if (Array.isArray(el)) {
-                            const [value, name] = el;
-                            return {value, name};
-                        }else{
-                            return el;
-                        }
-                    })
+
 
                     m.ls = ls;
                 }
