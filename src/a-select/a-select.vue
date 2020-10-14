@@ -150,7 +150,7 @@
                     }
 
                     if (typeof m.elFormatter == "function") {
-                        m.ls = ls.map((el)=>{
+                        ls = ls.map((el)=>{
                             let [value, name] = m.elFormatter(el, {
                                 valueField: m.valueField,
                                 nameField: m.nameField
@@ -158,9 +158,20 @@
                             return {value, name};
                         });
                     }else{
-                        m.ls = ls.map(el => ({name: getValue(el, m.nameField), value: getValue(el, m.valueField)}));
+                        ls = ls.map(el => ({name: getValue(el, m.nameField), value: getValue(el, m.valueField)}));
                     }
 
+                    //以数组为参数
+                    ls = ls.map(el=>{
+                        if (Array.isArray(el)) {
+                            const [value, name] = el;
+                            return {value, name};
+                        }else{
+                            return el;
+                        }
+                    })
+
+                    m.ls = ls;
                 }
             },
             ls:{
