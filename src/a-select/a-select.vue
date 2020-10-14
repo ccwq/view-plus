@@ -166,13 +166,13 @@
             ls:{
                 handler(ls) {
                     const m = this;
-                    let valueOption = ls?.find?.(el => el.value == m.val);
+                    let valueOption = ls.find(el => el.value == m.val);
 
                     //没有找到当前值对应的选项
                     if (!valueOption) {
                         if (m.backupValue) {
 
-                            valueOption = ls?.find?.(el => m.value == m.backupValue);
+                            valueOption = ls.find(el => m.value == m.backupValue);
                             if (valueOption) {
                                 m.val = m.backupValue;
 
@@ -200,7 +200,7 @@
                         value = m.blankValueReplacer;
                     }
 
-                    let valueOption = m?.ls?.find?.(el => el.value == value);
+                    let valueOption = m.ls.find(el => el.value == value);
                     if (!valueOption) {
 
                         //对后选值的处理

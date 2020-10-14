@@ -40,8 +40,6 @@ export default class  {
     }
 
 
-
-
     /**
      * 允许使用如下语法进行表单创建
      `
