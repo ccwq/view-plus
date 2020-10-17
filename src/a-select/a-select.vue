@@ -171,8 +171,6 @@
                         ls = ls.map(el => ({name: getValue(el, m.nameField), value: getValue(el, m.valueField)}));
                     }
 
-
-
                     m.ls = ls;
                 }
             },
