@@ -1,6 +1,6 @@
 {
     "name": "view-plus",
-    "version": "1.1.10",
+    "version": "1.5.21",
     "main": "index.js",
     "license": "MIT",
     "devDependencies": {
@@ -27,12 +27,17 @@
         "webpack-cli": "^3.3.10"
     },
     "scripts": {
-        "build": "webpack"
+        "build": "webpack",
+        "publish major": "snpm version major && snpm publish",
+        "publish minor": "snpm version minor && snpm publish",
+        "publish patch": "snpm version patch && snpm publish"
     },
     "dependencies": {
+        "ipro": "^1.0.27",
         "iview": "^3.5.2",
         "lodash": "^4.17.15",
         "tree-crawl": "^1.0.5",
+        "view-plus": "^1.1.5",
         "vue": "^2.6.10"
     }
 }

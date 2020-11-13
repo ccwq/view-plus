@@ -40,8 +40,6 @@ export default class  {
     }
 
 
-
-
     /**
      * 允许使用如下语法进行表单创建
      `
@@ -71,47 +69,63 @@ export default class  {
         formConfigText = formConfigText.trim().replace(/,$/, "");
         return formConfigText
             .split("\n")
-            .map(el=>el.trim())
-            .filter(el=>(el && !el.startsWith("//")))
-            .map(el=>el.trim().split(/\s+/))
-            .reduce((ret, [prop, type, label, value])=>{
+            .map(el => el.trim())
+            .filter(el => (el && !el.startsWith("//")))
+            .map(el => el.trim().split(/\s+/))
+            .reduce((ret, [prop, type = "", label = "", value = ""]) => {
+                let [_type, ...itemClass] = type.split(".");
+                type = _type;
+
+                let [_prop, ...formItemClass] = prop.split(".");
+                prop = _prop;
 
                 if (type == "number") {
                     value = parseFloat(value);
-                }else if (/^bool/.test(type)) {
+                } else if (/^bool/.test(type)) {
                     // value = value !== "false";
-                }else if (type == "date") {
+                } else if (type == "date") {
                     value = m.parseDate(value);
                 }
 
-
-                let item = {prop, label, type, value};
+                let item = {prop, label, type, value, itemClass, formItemClass};
 
                 //如果值为单个"-"表示该项不设置
-                Object.keys(item).forEach(key=>{
+                Object.keys(item).forEach(key => {
                     if (item[key] == "-") {
                         delete item[key]
                     }
                 })
 
                 if (commSett) {
-                    item = commSett(item) || item;
+                    item = {
+                        ...commSett(item),
+                        ...item
+                    };
                 }
-
-
 
                 let _eachSett = eachSett[prop];
 
                 if (typeof _eachSett == "function") {
                     item = _eachSett(item) || item;
-                }else if (_eachSett) {
-                    item = Object.assign(item,_eachSett);
+                } else if (_eachSett) {
+                    item = Object.assign(item, _eachSett);
                 }
 
+
+                //下拉选项类型处理
+                if (Array.isArray(item.options)) {
+                    item.options = item.options.map(el => {
+                        if (Array.isArray(el)) {
+                            let [value, name] = el;
+                            return {value, name}
+                        }
+                        return el;
+                    })
+                }
                 ret.push(item);
                 return ret;
             }, [])
-        ;
+            ;
     }
 
 

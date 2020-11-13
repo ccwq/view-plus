@@ -4,6 +4,7 @@
         :model="form"
         :rules="rules"
         :label-width="labelWidth"
+        :class="{readonly, disabled}"
     ).co-form-comp
         template(v-for="item, index in items_clone_filtered")
 
@@ -19,11 +20,20 @@
             template(v-if="item.virtual")
                 //虚拟的
             template(v-else-if="item.render")
-                render(:render="item.render" :item="item" :items="items_clone" :form="form")
+                render(
+                    :render="item.render"
+                    :item="item"
+                    :items="items_clone"
+                    :form="form"
+                    :disabled="disabled"
+                    :readonly="readonly"
+                )
 
             //不使用formItem包裹(无法使用验证)
             template(v-else-if="item.noFormItem")
                 slot(
+                    :disabled="disabled"
+                    :readonly="readonly"
                     :name="item.type"
                     :item="item"
                     :form="form"
@@ -35,7 +45,7 @@
                 :prop="item.prop"
                 :label="item.label"
                 v-show="!item.hideWhen(form)"
-                :class="[ 'item-prop-' + item.prop]"
+                :class="item.formItemClass"
             )
                 template(v-if="/^(text|textarea|password|)$/.test(item.type)")
                     Input(
@@ -43,25 +53,41 @@
                         :value="form[item.prop]"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
+                        :disabled="disabled"
                         :placeholder="item.placeholder"
+                        :class="item.itemClass"
+                        :readonly="readonly"
                     )
                 template(v-if="/^(date)$/.test(item.type)")
                     DatePicker(
                         transfer
+                        :disabled="disabled"
                         :value="_dateTransform(form[item.prop])"
                         @input="formChangeHandler(item, _dateTransform($event, 'Number'))"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
+                        :class="item.itemClass"
+                        :readonly="readonly"
                     )
                 template(v-if="/^(number|int)$/.test(item.type)")
                     InputNumber(
+                        :disabled="disabled"
+                        :readonly="readonly"
                         :value="_numberTransform(form[item.prop])"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
+                        :class="item.itemClass"
                     )
                 template(v-else-if="item.type==='select'")
-                    Select(:value="form[item.prop]" @input="formChangeHandler(item, $event)" v-bind="item.attrs" transfer)
+                    Select(
+                        :disabled="disabled || readonly"
+                        :value="form[item.prop]"
+                        @input="formChangeHandler(item, $event)"
+                        v-bind="item.attrs"
+                        transfer
+                        :class="item.itemClass"
+                    )
                         Option(
                             v-for="opt,index in item.options"
                             :key="index"
@@ -71,15 +97,20 @@
                 //布尔
                 template(v-if="/^(bool|boolean)$/.test(item.type)")
                     Checkbox(
+                        :disabled="disabled"
+                        :readonly="readonly"
                         v-bind="item.attrs"
                         :true-value="item.trueValue"
                         :false-value="item.falseValue"
                         :value='form[item.prop]'
                         @input="formChangeHandler(item, $event)"
+                        :class="item.itemClass"
                     ): span {{booleanCheckLabelTransf(item, form[item.prop])}}
 
                 template(v-else)
                     slot(
+                        :disabled="disabled"
+                        :readonly="readonly"
                         :name="item.type"
                         :item="item"
                         :form="form"
@@ -142,7 +173,7 @@
                 // form,
                 labelWidth: 80,
 
-                form:{},
+                form_nature:{},
 
                 items_clone:[],
             }
@@ -169,7 +200,7 @@
 
             //表单项
             items:{
-                type:Array,
+                type:[Array, Promise, Function],
                 default(){
                     return [
                         {
@@ -191,8 +222,33 @@
                 type:[Object, String],
                 default:""
             },
+
+
+
+            //禁用所有表单元素
+            disabled: {
+                type: Boolean,
+                default: false,
+            },
+
+            //禁用所有表单元素
+            readonly: {
+                type: Boolean,
+                default: false,
+            },
         },
         computed: {
+
+            //用来抓取错误
+            form:{
+                set(v){
+                    this.form_nature = v;
+                },
+                get(v){
+                    return this.form_nature;
+                }
+            },
+
             items_clone_filtered() {
                 const m = this;
 
@@ -212,7 +268,7 @@
             rules() {
                 const m = this;
                 let ret = {};
-                m.items.forEach(item=>{
+                m.items_clone.forEach(item=>{
                     if (item.validators) {
                         ret[item.prop] = transformValidator.call(m, item.validators );
                     }
@@ -284,11 +340,6 @@
                                 }
                             }
                         })
-
-                        // Object.keys(model).forEach(key=>{
-                        //     form[key] = model[key];
-                        // })
-
                         m.form = form;
                     }
                 }
@@ -303,19 +354,70 @@
             //     }
             // },
 
-
             //为form赋值
             items:{
                 immediate: true,
                 async handler(items){
-
                     const m = this;
+                    let __items = items;
+
+                    if (!__items) {
+                        return console.warn("表单配置不能为空");
+                    }
+
+                    if (typeof __items == "function") {
+                        __items = __items(m);
+                    }
+
+                    if (!__items) {
+                        return console.warn("表单配置不能为空");
+                    }
+
+                    if (__items.then) {
+                        __items = await __items;
+                    }
+
+                    if (!__items) {
+                        return console.warn("表单配置不能为空");
+                    }
+
+                    if (!Array.isArray(__items)) {
+                        return console.warn("表单配置需要为数组");
+                    }
+
+
+                    items = __items;
 
                     //设置默认text，并且进行复制
-                    items.forEach(item=>{
+                    items.forEach((item,index)=>{
                         item.type = item.type || "text";
 
                         item.hideWhen = _=>false;
+
+
+                        let defItemClass = `co-form-input co-input-type-${item.type} co-input-prop-${item.prop}`;
+
+                        if (item.itemClass) {
+                            item.itemClass += ` ${defItemClass}` ;
+                        }else{
+                            item.itemClass = defItemClass;
+                        }
+
+
+                        //2的倍数
+                        let mult2Str = !(index % 2) ? " mult-2" : "";
+
+                        //3的倍数
+                        let mult3Str = !(index % 3) ? " mult-3" : "";
+
+                        let defFormItemClass =`co-item co-item-prop-${item.prop} co-item-type-${item.type} co-item-index-${index}${mult2Str}${mult3Str}`;
+
+                        if (item.formItemClass) {
+                            item.formItemClass += ` ${defFormItemClass}` ;
+                        }else{
+                            item.formItemClass = defFormItemClass;
+                        }
+
                         //增加默认属性
                         if (/^(text|textarea|password)$/.test(item.type)) {
 
@@ -417,9 +519,11 @@
             //重置为默认值
             resetValues() {
                 const m = this;
-                m.items_clone.filter(el=>el.prop).forEach((item)=>{
-                    resetFormValueByItem(m.form, item);
-                })
+                let form = {...m.form};
+                m.items_clone.filter(el => el.prop).forEach((item) => {
+                    resetFormValueByItem(form, item);
+                });
+                m.form = form;
             },
 
             //仅重置验证
@@ -519,11 +623,6 @@
     }
 
 
-
-
-
-
-
     /**
      * 设置item的默认属性
      */
@@ -540,6 +639,7 @@
         }
     }
 
+
     /**
      * 获取默认值
      * @param item
@@ -550,7 +650,7 @@
 
         //设置默认值
         if (typeof value == "undefined") {
-            if (/^(bool|boolean)$/.test(item.type)) {
+            if (/^bool/.test(item.type)) {
                 value = item.falseValue;
             }else if (item.type == "number") {
                 value = 0;
@@ -571,6 +671,8 @@
      * @param form
      */
     function resetFormValueByItem(form, item){
+
+        //prop是数组的情况
         if(Array.isArray(item.prop)){
 
             _temp(item.value, item.prop, form);
@@ -589,11 +691,17 @@
                 }
                 return ret;
             }, {})
+
+        //拥有原始props的情况
         }else if(item.originProp){
             _temp(item.value, item.originProp, form);
+
+        //普通情况
         } else{
-            form[item.prop] = getDefaultValueByFormItemOption(item);
+            let value = getDefaultValueByFormItemOption(item);
+            form[item.prop] = value;
         }
+
 
         function _temp(value, propLs, form){
             propLs.forEach((key, index)=>{
@@ -662,7 +770,7 @@
 
             //最小宽度
             .ivu-input-wrapper, .ivu-select {
-                min-width: 21em;
+                //min-width: 21em;
             }
         }
 
