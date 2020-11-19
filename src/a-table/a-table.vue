@@ -1,9 +1,7 @@
 <template lang="pug">
     v-box.a-table-comp(:offset-y="offset")
-
-        template(#header)
-            slot(name="header")
-
+        template(#header=""): slot(name="header")
+        template(#footer=""): slot(name="footer")
         template(#default="{height}")
             Table.__table(
                 :highlight-row="selectMode"
@@ -15,14 +13,14 @@
                 `
                 v-on="listeners"
             )
+
                 template(
                     v-for="col in slotColumns"
                     v-slot:[col.slot]="{row, column, index}"
                 )
                     slot(:name="col.slot" :row="row" :column="column" :index="index")
 
-        template(#footer)
-            slot(name="footer")
+
 
 </template>
 <script>

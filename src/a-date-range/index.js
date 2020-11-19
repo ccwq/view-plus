@@ -1,3 +1,3 @@
-import comp from "./a-date-range";
+import comp from "./a-date-range.vue";
 
 export default comp;

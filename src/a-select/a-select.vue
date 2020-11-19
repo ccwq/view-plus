@@ -285,7 +285,7 @@
         return object[keyLs[keyLs.length - 1]];
     }
 </script>
-<style scoped>
+<style scoped lang="less">
     .a-select-comp {
         >label{
             padding-right: 0.5em;
