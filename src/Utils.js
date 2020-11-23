@@ -51,7 +51,7 @@ export default class  {
      * @param eachSett 附加字段，以prop为key
      * @param commSett 附加字段，为所有增加同样的配置
      */
-    static text2formItems(formConfigText, {commSett, eachSett}){
+    static text2formItems(formConfigText, {commSett=_=>_, eachSett={}}){
         const m = this;
 
 
@@ -62,7 +62,7 @@ export default class  {
 
         //设置是函数的形式
         if(typeof eachSett == "function"){
-            eachSett = eachSett();
+            eachSett = eachSett() || {};
         }
 
         //trim并且删除最后多余的逗号
