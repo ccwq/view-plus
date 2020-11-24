@@ -52,6 +52,7 @@
                         :type="item.type"
                         :value="form[item.prop]"
                         @input="formChangeHandler(item, $event)"
+                        @keydown.native.13="handlerEnter($event, item, index)"
                         v-bind="item.attrs"
                         :disabled="disabled"
                         :placeholder="item.placeholder"
@@ -78,6 +79,7 @@
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
+                        @keydown.native.13="handlerEnter($event, item, index)"
                     )
                 template(v-else-if="item.type==='select'")
                     Select(
@@ -451,6 +453,13 @@
         },
 
         methods: {
+
+
+            //回车
+            handlerEnter(e, item, index){
+                const m = this;
+                m.$emit("enter", index);
+            },
 
             formChangeHandler(item,value) {
                 const m = this;
