@@ -217,7 +217,7 @@ export const iviewValidatorLsRunner = function (value, iviewValidatorLs) {
             }
 
             if (typeof func != "function") {
-                return Promise.reject(new Error("存在无效验证规则"));
+                return __=>Promise.reject(new Error("存在无效验证规则"));
             }
 
             return __ => new Promise((resolve, reject) => {
