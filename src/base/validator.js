@@ -220,15 +220,14 @@ export const iviewValidatorLsRunner = function (value, iviewValidatorLs) {
  */
 export const iviewValidatorLsRunner2 = function (value, iviewValidatorLs) {
     return promiseMap(
-
+        iviewValidatorLs.map(func=>{
+            return __ => new Promise((resolve, reject) => {
+                func(null, value, error => {
+                    error ? reject(error) : resolve();
+                })
+            });
+        })
     );
-    return Promise.all(
-        iviewValidatorLs.map(func=>new Promise((resolve, reject) => {
-            func(null, value, error=>{
-                error ? reject(error) : resolve();
-            })
-        }))
-    )
 }
 
 

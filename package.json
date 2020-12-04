@@ -24,7 +24,7 @@
         "@vue/cli-service": "^4.3.1",
         "cross-env": "^7.0.2",
         "glob": "^7.1.6",
-        "ipro": "^1.0.36",
+        "ipro": "^1.0.37",
         "lodash": "^4.17.15",
         "minimist": "^1.2.5",
         "rollup": "^2.7.3",
