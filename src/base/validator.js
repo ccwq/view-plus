@@ -200,16 +200,6 @@ function trim(string){
 
 
 
-/**
- * 处理如下形式的ValidatorLs
- * [{validator}, {validator}]
- * @param value
- * @param iviewValidatorLs
- */
-export const iviewValidatorLsRunner = function (value, iviewValidatorLs) {
-    return iviewValidatorLsRunner2(value, iviewValidatorLs.map(el=>el.validator));
-}
-
 
 /**
  * 处理如下形式的ValidatorLs
@@ -218,9 +208,18 @@ export const iviewValidatorLsRunner = function (value, iviewValidatorLs) {
  * @param iviewValidatorLs
  * @returns {*}
  */
-export const iviewValidatorLsRunner2 = function (value, iviewValidatorLs) {
+export const iviewValidatorLsRunner = function (value, iviewValidatorLs) {
     return promiseMap(
         iviewValidatorLs.map(func=>{
+
+            if (func && func.validator) {
+                func = func.validator;
+            }
+
+            if (typeof func != "function") {
+                return Promise.reject(new Error("存在无效验证规则"));
+            }
+
             return __ => new Promise((resolve, reject) => {
                 func(null, value, error => {
                     error ? reject(error) : resolve();
@@ -229,7 +228,6 @@ export const iviewValidatorLsRunner2 = function (value, iviewValidatorLs) {
         })
     );
 }
-
 
 /**
  * 用来生成一个验证规则列表
