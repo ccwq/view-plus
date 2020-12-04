@@ -6,9 +6,9 @@
     "scripts": {
         "build": "npm run build:umd",
         "serve": "vue-cli-service serve build/serve.js",
-        "publish major": "npm build && snpm version major && snpm publish",
-        "publish minor": "npm build && snpm version minor && snpm publish",
-        "publish patch": "npm build && snpm version patch && snpm publish",
+        "publish major": "npm run build && snpm version major && snpm publish",
+        "publish minor": "npm run build && snpm version minor && snpm publish",
+        "publish patch": "npm run build && snpm version patch && snpm publish",
         "build:ssr": "cross-env NODE_ENV=production  node build --format cjs",
         "build:es": "cross-env NODE_ENV=production  node build --format es",
         "build:umd": "cross-env NODE_ENV=production  node build --format umd",
