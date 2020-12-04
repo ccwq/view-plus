@@ -1,5 +1,8 @@
 import get from "lodash/get"  //保存数据的库
 
+import {promiseMap} from "ipro/src/promise/utils";
+
+
 /**
  * 用来 验证字符串长度
  * 用法:{
@@ -216,6 +219,9 @@ export const iviewValidatorLsRunner = function (value, iviewValidatorLs) {
  * @returns {*}
  */
 export const iviewValidatorLsRunner2 = function (value, iviewValidatorLs) {
+    return promiseMap(
+
+    );
     return Promise.all(
         iviewValidatorLs.map(func=>new Promise((resolve, reject) => {
             func(null, value, error=>{

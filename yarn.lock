@@ -4814,14 +4814,15 @@ ipaddr.js@1.9.1, ipaddr.js@^1.9.0:
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
   integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
 
-ipro@^1.0.27:
-  version "1.0.27"
-  resolved "https://registry.yarnpkg.com/ipro/-/ipro-1.0.27.tgz#35cdf531a3697da4e4b57ae67a18129f6db6a12d"
-  integrity sha512-SJM7ohDT3QEKbj9Y0aBZmwotrqvtH5yTOdb6zTPkfsBfo3zNNd9ph/0H1bQRy191qp2ewu86HW1UL2H6fYpphw==
+ipro@^1.0.36:
+  version "1.0.36"
+  resolved "https://registry.yarnpkg.com/ipro/-/ipro-1.0.36.tgz#a6afebe480b1569af3a9cbb8ef9178f54921b25e"
+  integrity sha512-Ay15CTFtMn8revecX7QW5IhHY5dqVdOXomVfYj5GgFwfj+0Zq9D06QMl3KsjwS552M0hJtrX2q7agiMOVPJb2A==
   dependencies:
     date-prototype "^1.0.0"
     fast-gbk "^0.0.1"
     lodash "^4.17.15"
+    tree-crawl "^1.1.0"
 
 is-absolute-url@^2.0.0:
   version "2.1.0"
@@ -8564,6 +8565,11 @@ tree-crawl@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/tree-crawl/-/tree-crawl-1.0.5.tgz#0a3e2e6808756f9770c1cfbda84bc039976640a7"
   integrity sha512-iGxq6nMcZ2PCRQOHykbhM5nMBiErA9iVfWvfatKlfAZ4O4t/46BfrbZfTcoNM6H6o6TYHQvxHtPWEnvPqH7rDA==
+
+tree-crawl@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/tree-crawl/-/tree-crawl-1.1.0.tgz#3c5e704b59eec45eb8226ddd302a409d76cd28bb"
+  integrity sha512-pQfQTKBYEJhA3kIV8fL1rJJR8hgVzgX4u4IJi1EjnEch8BOUC+KQsuPMD6Pf017Sc8XD64WaA4q8840XhsIrIA==
 
 tryer@^1.0.1:
   version "1.0.1"
