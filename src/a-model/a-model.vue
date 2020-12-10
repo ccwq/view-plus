@@ -3,7 +3,7 @@
         v-bind="modalOptions"
         v-on="modalListeners"
         ref="modal"
-        :class="{'protect-content':protectContent}"
+        :class="{'protect-content':protectContent, disabled}"
     )
         slot
         template( slot="footer" )
@@ -12,8 +12,10 @@
                 :cancel-handler="cancelHandler"
                 :confirm-handler="confirmHandler"
             )
+                slot(name="footer-before")
                 Button(type="warning" @click="cancelHandler" v-if="!noCancel") 取消
                 Button(type="primary" @click="confirmHandler" v-if="!noOk") 确定
+                slot(name="footer-after")
 </template>
 <script>
     export default {
@@ -63,6 +65,11 @@
 
             //保护内容避免被单击
             protectContent:{
+                default:false,
+                type:Boolean,
+            },
+
+            disabled:{
                 default:false,
                 type:Boolean,
             },
@@ -149,8 +156,12 @@
 
     }
 </script>
-<style>
+<style lang="less">
     .a-modal-comp{
-
+        &.disabled{
+            .ivu-modal-content{
+                pointer-events: none;
+            }
+        }
     }
 </style>
