@@ -27,6 +27,12 @@
 
 </template>
 <script>
+
+const propOfOptions = {
+    type: [Array, String, Function],
+    default: ""
+};
+
 export default {
     name: "a-select",
 
@@ -91,11 +97,10 @@ export default {
             default:false,
         },
 
-        //自定义数据
-        optionLs: {
-            type:[Array, String, Function],
-            default:""
-        },
+        //选项数据自定义数据
+        options:propOfOptions,
+        optionsLs:propOfOptions,
+        optionLs: propOfOptions,
 
         valueField:{
             type:[String, Array],
@@ -121,10 +126,21 @@ export default {
             default: false,
         },
 
+        /**
+         * 选项以字符串形式输入,选项和选项之间的分割字符
+         */
         stringElSplit:{
             type:[String, RegExp],
-            default:","
+            default: _=>/\s/
         },
+
+        /**
+         * 选项的项目以字符串形式输入，value和name的分割方式
+         */
+        stringValueNameSplit:{
+            type:[String, RegExp],
+            default:","
+        }
     },
 
     computed:{
@@ -135,74 +151,24 @@ export default {
                 ...m.selectorAttrs
             }
         },
+
+        optionsList(){
+            return this.optionLs || this.options || this.optionsLs;
+        },
     },
 
     watch:{
-        optionLs:{
+        optionsList:{
             immediate: true,
-            async handler(opt){
-                const m = this;
-                let ls;
-
-                //是函数
-                if (typeof m.optionLs == "function") {
-                    ls = await m.optionLs();
-
-                    //是数组
-                }else if(Array.isArray(m.optionLs)){
-                    ls = m.optionLs;
-                }else{
-                    if (Array.isArray(m.$options.defaultLs)) {
-                        ls = m.$options.defaultLs
-                    }else if(typeof m.$options.defaultLs == "function"){
-                        ls = await m.$options.defaultLs();
-                    }else{
-                        ls = [{
-                            name:"请通过optionLs传入数组或者异步函数",
-                            value:-1,
-                        }]
-                    }
-                }
-
-                if (typeof m.elFormatter == "function") {
-                    ls = ls.map((el)=>{
-                        let [value, name] = m.elFormatter(el, {
-                            valueField: m.valueField,
-                            nameField: m.nameField
-                        }, getValue);
-                        return {value, name};
-                    });
-                }
-
-                //以数组为参数
-                ls = ls.map(el=>{
-
-                    const _el = el;
-
-                    //切割字符串
-                    if (typeof el == "string" || typeof el =="number") {
-                        el = (el+"").split(m.stringElSplit);
-                    }
-                    if (Array.isArray(el)) {
-                        let [value, name] = el;
-                        if (name === undefined) {
-                            name = value;
-                        }
-                        return {value, name};
-                    }else{
-                        return {
-                            name: getValue(el, m.nameField),
-                            value: getValue(el, m.valueField)
-                        }
-                    }
-                })
-
-                m.ls = ls;
+            async handler(ls){
+                this.parseOptions(ls);
             }
         },
         ls:{
             handler(ls) {
                 const m = this;
+
+                //寻找当前值的选项
                 let valueOption = ls.find(el => el.value == m.val);
 
                 //没有找到当前值对应的选项
@@ -257,6 +223,73 @@ export default {
     },
 
     methods: {
+
+        async parseOptions(options){
+            const m = this;
+
+            let ls;
+
+
+            //是函数
+            if (typeof options == "function") {
+                ls = await options();
+
+                //字符串的形式
+            }if (typeof options == "string") {
+                ls = options.split(m.stringElSplit);
+
+                //是数组
+            }else if(Array.isArray(options)){
+                ls = options;
+            }else{
+                if (Array.isArray(m.$options.defaultLs)) {
+                    ls = m.$options.defaultLs
+                }else if(typeof m.$options.defaultLs == "function"){
+                    ls = await m.$options.defaultLs();
+                }else{
+                    ls = [{
+                        name:"请通过optionLs传入数组或者异步函数",
+                        value:-1,
+                    }]
+                }
+            }
+
+            if (typeof m.elFormatter == "function") {
+                ls = ls.map((el)=>{
+                    let [value, name] = m.elFormatter(el, {
+                        valueField: m.valueField,
+                        nameField: m.nameField
+                    }, getValue);
+                    return {value, name};
+                });
+            }
+
+            //以数组为参数
+            ls = ls.map(el=>{
+
+                const _el = el;
+
+                //切割字符串
+                if (typeof el == "string" || typeof el =="number") {
+                    el = (el+"").split(m.stringValueNameSplit);
+                }
+                if (Array.isArray(el)) {
+                    let [value, name] = el;
+                    if (name === undefined) {
+                        name = value;
+                    }
+                    return {value, name};
+                }else{
+                    return {
+                        name: getValue(el, m.nameField),
+                        value: getValue(el, m.valueField)
+                    }
+                }
+            })
+
+            m.ls = ls;
+        },
+
         inputHandler(value) {
             const m = this;
 
