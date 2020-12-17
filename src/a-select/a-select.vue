@@ -119,7 +119,12 @@ export default {
         disabled: {
             type:Boolean,
             default: false,
-        }
+        },
+
+        stringElSplit:{
+            type:[String, RegExp],
+            default:","
+        },
     },
 
     computed:{
@@ -171,8 +176,18 @@ export default {
 
                 //以数组为参数
                 ls = ls.map(el=>{
+
+                    const _el = el;
+
+                    //切割字符串
+                    if (typeof el == "string" || typeof el =="number") {
+                        el = (el+"").split(m.stringElSplit);
+                    }
                     if (Array.isArray(el)) {
-                        const [value, name] = el;
+                        let [value, name] = el;
+                        if (name === undefined) {
+                            name = value;
+                        }
                         return {value, name};
                     }else{
                         return {
