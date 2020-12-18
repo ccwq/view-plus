@@ -47,6 +47,7 @@
                 default:false,
                 type:Boolean,
             },
+
             value: {
                 type:Boolean,
                 default:false,
