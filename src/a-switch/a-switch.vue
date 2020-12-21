@@ -44,7 +44,12 @@ export default {
         lableLs(){
             const m = this;
             if (typeof m.labels == "string") {
-                return m.labels.split(",")
+                let label = m.labels.split(",");
+                if (label.length >= 2) {
+                    return label;
+                } else {
+                    return [label, label].flat();
+                }
             }else{
                 return m.labels;
             }
