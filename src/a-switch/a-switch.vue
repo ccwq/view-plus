@@ -43,15 +43,16 @@ export default {
 
         lableLs(){
             const m = this;
+            let label
             if (typeof m.labels == "string") {
-                let label = m.labels.split(",");
-                if (label.length >= 2) {
-                    return label;
-                } else {
-                    return [label, label].flat();
-                }
-            }else{
-                return m.labels;
+                 label = m.labels.split(",");
+            }else if(Array.isArray(m.labels)){
+                label = m.lableLs;
+            }
+            if (label.length >= 2) {
+                return label;
+            } else {
+                return [label, label].flat();
             }
         },
 
