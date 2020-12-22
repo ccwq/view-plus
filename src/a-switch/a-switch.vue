@@ -3,7 +3,11 @@
         span.pr05(v-if="!labelRight")
             b(v-text="title")
             slot
-        i-switch(v-bind="attrs" @input="$emit('input', $event); data=$event")
+        i-switch(
+            v-if="attrs"
+            v-bind="attrs"
+            @input="$emit('input', $event); data=$event"
+        )
             span.__label(slot="open")   {{onLabel}}
             span.__label(slot="close")  {{offLabel}}
         span.pl05(v-if="labelRight")
@@ -11,55 +15,89 @@
             slot
 </template>
 <script>
+
+const labelValueParser = function(origin){
+    if (!origin) {
+        return [];
+    }
+    let label;
+    if (typeof origin == "string") {
+        label = origin.split(",");
+    }else if(Array.isArray(origin)){
+        label = origin;
+    }
+    if (label.length >= 2) {
+        return label;
+    } else {
+        return [label, label].flat();
+    }
+}
+
+const VALUE_BLANK = "value-blank-lKsUrwpj";
+
+
 export default {
     name: "a-switch",
 
     data() {
         return {
-            data: this.value
+            data: VALUE_BLANK,
         }
     },
 
     props: {
+
+        //标题在右边
         labelRight:{
             type:Boolean,
             default: false,
         },
 
+        //开关上面的字
         labels:{
+            type:[String, Array],
+            default:""
+        },
+
+        //定义选中或者非选中状态的值
+        values:{
             type:[String, Array],
             default:"开,关"
         },
 
+        //左边的标题
         title: {
             type:String,
             default:"",
         },
-        value: {}
+
+        //值
+        value: {},
     },
 
 
     computed:{
 
+        valueLs(){
+            let [trueValue = true, falseValue = false] = labelValueParser(this.values);
+            return [trueValue, falseValue];
+        },
+
         lableLs(){
-            const m = this;
-            let label
-            if (typeof m.labels == "string") {
-                 label = m.labels.split(",");
-            }else if(Array.isArray(m.labels)){
-                label = m.lableLs;
-            }
-            if (label.length >= 2) {
-                return label;
-            } else {
-                return [label, label].flat();
-            }
+            let [on = "开", off = "关"] = labelValueParser(this.labels);
+            return [on, off];
         },
 
         attrs(){
+            let [trueValue = true, falseValue = false] = this.valueLs;
+            if (this.data == VALUE_BLANK) {
+                return "";
+            }
             return {
                 ...this.$attrs,
                 value:this.data,
+                trueValue,
+                falseValue,
             }
         },
 
@@ -72,12 +110,20 @@ export default {
         },
     },
 
-    watch: {
-        value(){
-            this.data = this.value;
-
-        }
-    },
+    mounted() {
+        const m = this;
+        m.$watch("value", {
+            immediate: true,
+            handler(value) {
+                let values = m.valueLs;
+                if (values.includes(value)) {
+                    m.data = m.value;
+                } else {
+                    m.data = values[0];
+                }
+            },
+        });
+    }
 }
 </script>
 <style lang="less">
@@ -115,8 +161,6 @@ export default {
     }
 
     .ivu-switch-checked:after{
-
-
     }
 }
 </style>
