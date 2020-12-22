@@ -62,7 +62,7 @@ export default {
         //定义选中或者非选中状态的值
         values:{
             type:[String, Array],
-            default:"开,关"
+            default:""
         },
 
         //左边的标题
