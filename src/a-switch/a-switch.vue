@@ -1,5 +1,5 @@
 <template lang="pug">
-    .a-switch-comp
+    .a-switch-comp(:class="{sleep}")
         span.pr05(v-if="!labelRight")
             b(v-text="title")
             slot
@@ -47,6 +47,12 @@ export default {
 
     props: {
 
+        //单击无效
+        sleep:{
+            type:Boolean,
+            default: false,
+        },
+
         //标题在右边
         labelRight:{
             type:Boolean,
@@ -56,13 +62,13 @@ export default {
         //开关上面的字
         labels:{
             type:[String, Array],
-            default:""
+            default:"开,关"
         },
 
         //定义选中或者非选中状态的值
         values:{
             type:[String, Array],
-            default:""
+            default:"",
         },
 
         //左边的标题
@@ -131,6 +137,12 @@ export default {
     .__label{
         white-space: nowrap;
     }
+    &.sleep{
+        .ivu-switch{
+            pointer-events: none;
+        }
+    }
+
     .ivu-switch{
         width: auto;
         &:after {
