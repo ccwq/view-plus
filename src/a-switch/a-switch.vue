@@ -105,7 +105,7 @@ export default {
         },
 
         valueLs(){
-            let [trueValue = true, falseValue = false] = labelValueParser(this.values);
+            let [trueValue = "true", falseValue = "false"] = labelValueParser(this.values);
             return [trueValue, falseValue];
         },
 
@@ -115,13 +115,16 @@ export default {
         },
 
         attrs(){
-            let [trueValue = true, falseValue = false] = this.valueLs;
             if (this.data == VALUE_BLANK) {
                 return "";
             }
+            let [trueValue, falseValue] = this.valueLs;
+
+
+            const value = this.data + "";
             return {
                 ...this.$attrs,
-                value:this.data,
+                value,
                 trueValue,
                 falseValue,
             }
@@ -217,6 +220,7 @@ export default {
         }
     }
 
-    .ivu-switch-checked:after{}
+    .ivu-switch-checked:after{
+    }
 }
 </style>
