@@ -153,8 +153,6 @@ export default {
             if (this.disableLabelClick) {
                 return;
             }
-
-            console.log(123);
             this.$refs.switcher.$el.click();
         }
     },
