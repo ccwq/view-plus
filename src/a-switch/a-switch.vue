@@ -177,6 +177,7 @@ export default {
 </script>
 <style lang="less">
 .a-switch-comp {
+    display: inline-block;
     .__label{
         white-space: nowrap;
         cursor: default;
