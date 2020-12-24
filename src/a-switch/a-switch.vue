@@ -7,6 +7,7 @@
             v-if="attrs"
             v-bind="attrs"
             @input="$emit('input', $event); data=$event"
+            @click.native.stop
         )
             span.__label(slot="open")   {{onLabel}}
             span.__label(slot="close")  {{offLabel}}
@@ -152,6 +153,8 @@ export default {
             if (this.disableLabelClick) {
                 return;
             }
+
+            console.log(123);
             this.$refs.switcher.$el.click();
         }
     },
