@@ -20,15 +20,15 @@ const labelValueParser = function(origin){
         return [];
     }
     let label;
-    if (typeof origin == "string") {
-        label = origin.split(",");
-    }else if(Array.isArray(origin)){
-        label = origin;
+    if(Array.isArray(origin)){
+        label = origin.map(l=>l+"");
+    }else{
+        label = (origin + "").split(",");
     }
     if (label.length >= 2) {
         return label;
     } else {
-        return [label, label].flat();
+        return [label, label].flat()
     }
 }
 
@@ -153,8 +153,6 @@ export default {
             if (this.disableLabelClick) {
                 return;
             }
-
-            console.log(123);
             this.$refs.switcher.$el.click();
         }
     },
@@ -164,9 +162,10 @@ export default {
         m.$watch("value", {
             immediate: true,
             handler(value) {
+                value = value + "";
                 let values = m.valueLs;
                 if (values.includes(value)) {
-                    m.data = m.value;
+                    m.data = m.value ;
                 } else {
                     m.data = values[0];
                 }
@@ -218,7 +217,6 @@ export default {
         }
     }
 
-    .ivu-switch-checked:after{
-    }
+    .ivu-switch-checked:after{}
 }
 </style>
