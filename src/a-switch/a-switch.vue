@@ -44,7 +44,7 @@ export default {
     },
 
     props: {
-        disableLabelClickk:{
+        disableLabelClick:{
             type:Boolean,
             default: false,
         },
@@ -149,6 +149,9 @@ export default {
     },
     methods: {
         handlerClick() {
+            if (this.disableLabelClick) {
+                return;
+            }
             this.$refs.switcher.$el.click();
         }
     },
@@ -173,10 +176,12 @@ export default {
 .a-switch-comp {
     .__label{
         white-space: nowrap;
+        cursor: default;
     }
     &.sleep{
+        pointer-events: none;
         .ivu-switch{
-            pointer-events: none;
+
         }
     }
 
