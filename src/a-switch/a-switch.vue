@@ -1,18 +1,16 @@
 <template lang="pug">
-    .a-switch-comp(:class="{sleep}")
-        span.pr05(v-if="!labelRight")
-            b(v-text="title")
-            slot
+    .a-switch-comp(:class="{sleep:sleeping}" @click="handlerClick")
+        slot(name="start" :title="title")
+            span.pr05(v-if="title"): b(v-text="title")
         i-switch(
+            ref="switcher"
             v-if="attrs"
             v-bind="attrs"
             @input="$emit('input', $event); data=$event"
         )
             span.__label(slot="open")   {{onLabel}}
             span.__label(slot="close")  {{offLabel}}
-        span.pl05(v-if="labelRight")
-            b(v-text="title")
-            slot
+        slot(name="end" :title="title")
 </template>
 <script>
 
@@ -46,15 +44,22 @@ export default {
     },
 
     props: {
-
-        //单击无效
-        sleep:{
+        disableLabelClickk:{
             type:Boolean,
             default: false,
         },
 
-        //标题在右边
-        labelRight:{
+        sleepWhenOn:{
+            type:Boolean,
+            default: false,
+        },
+        sleepWhenOff:{
+            type:Boolean,
+            default: false,
+        },
+
+        //单击无效
+        sleep:{
             type:Boolean,
             default: false,
         },
@@ -83,6 +88,20 @@ export default {
 
 
     computed:{
+        sleeping(){
+            const m = this;
+            const {sleepWhenOn, sleepWhenOff, sleep, on, off} = m;
+
+            if (sleepWhenOn) {
+                return on;
+            }
+
+            if (sleepWhenOff) {
+                return off;
+            }
+
+            return sleep;
+        },
 
         valueLs(){
             let [trueValue = true, falseValue = false] = labelValueParser(this.values);
@@ -114,6 +133,24 @@ export default {
         offLabel(){
             return this.lableLs[1] || "关"
         },
+
+
+        on(){
+            const {data} = this;
+            let [trueValue = true, falseValue = false] = labelValueParser(this.values);
+            return data == trueValue;
+        },
+
+        off(){
+            const {data} = this;
+            let [trueValue = true, falseValue = false] = labelValueParser(this.values);
+            return data == falseValue;
+        },
+    },
+    methods: {
+        handlerClick() {
+            this.$refs.switcher.$el.click();
+        }
     },
 
     mounted() {
