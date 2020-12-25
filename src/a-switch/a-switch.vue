@@ -180,6 +180,7 @@ export default {
 <style lang="less">
 .a-switch-comp {
     display: inline-block;
+    min-width: 5em;
     .__label{
         white-space: nowrap;
         cursor: default;
