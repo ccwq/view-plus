@@ -1,352 +1,223 @@
 <template lang="pug">
-    Select.a-select-comp(
-        :value="val"
-        transfer
-        @input="inputHandler"
-        :disabled="disabled"
-        v-if="!radioMode"
-        v-bind="attrs"
-    )
-        Option(
-            v-for="el, index in ls"
-            :key="index"
-            :value="el.value + ''"
-        ) {{el.name}}
-    .dd-select-comp.flex(v-else)
-        template( v-for="el, index in ls" )
-            Radio(
-                v-if="!el.slot"
-                :value="el.value == val"
-                @input=`$event?inputHandler(el.value):''`
-            ) {{el.name}}
-            slot(
-                :name="el.slot"
-                :selected="el.value == val"
-                :handler="selected=>selected?inputHandler(el,value):(_=>_)"
-            )
-
+    .a-switch-comp(:class="{sleep:sleeping}" @click="handlerClick")
+        slot(name="start" :title="title")
+            span.pr05(v-if="title"): b(v-text="title")
+        i-switch(
+            ref="switcher"
+            v-if="attrs"
+            v-bind="attrs"
+            @input="$emit('input', $event); data=$event"
+            @click.native.stop
+        )
+            span.__label(slot="open")   {{onLabel}}
+            span.__label(slot="close")  {{offLabel}}
+        slot(name="end" :title="title")
 </template>
 <script>
 
-const propOfOptions = {
-    type: [Array, String, Function],
-    default: ""
-};
+const labelValueParser = function(origin){
+    if (!origin) {
+        return [];
+    }
+    let label;
+    if(Array.isArray(origin)){
+        label = origin.map(l=>l+"");
+    }else{
+        label = (origin + "").split(",");
+    }
+    if (label.length >= 2) {
+        return label;
+    } else {
+        return [label, label].flat()
+    }
+}
+
+const VALUE_BLANK = "value-blank-lKsUrwpj";
+
 
 export default {
-    name: "a-select",
+    name: "a-switch",
 
     data() {
         return {
-            val: "",
-            ls:[],
+            data: VALUE_BLANK,
         }
     },
 
-
-    //用来通过简单继承实现修改默认值
-    defaultLs:"",
-
-    props:{
-
-        //内置属性设置
-        selectorAttrs:{
-            type:Object,
-            default:_=>({}),
-        },
-
-
-        //value匹配该值时$emit('input', '')
-        blankValueReplacer:{
-            type:[String, RegExp],
-            default:"-",
-        },
-
-        //使用radio模式
-        radioMode: {
-            default:false,
-        },
-
-        value:{
-            // type:[String, Number],
-            default:"",
-            validator(v){
-                if (/string|number/.test(typeof v)) {
-                    return true;
-                }else{
-                    console.warn("dd-select接受到了非法类型:", v);
-                    return true;
-                }
-            }
-        },
-
-        /**
-         * 备用value
-         * 当前value在select中找不到时
-         */
-        backupValue: {
-            default:"",
-        },
-
-
-        /**
-         * 当backupValue生效时，是否派发修改控件值的事件
-         */
-        backupValueEmitValue: {
-            type:Boolean,
-            default:false,
-        },
-
-        //选项数据自定义数据
-        options:propOfOptions,
-        optionsLs:propOfOptions,
-        optionLs: propOfOptions,
-
-        valueField:{
-            type:[String, Array],
-            default:"value"
-        },
-
-        nameField:{
-            type:[String, Array],
-            default:"name",
-        },
-
-        //自定义格式化函数
-        //(el, { valueField, nameField}, getValueFunction)=>[value, name]
-        elFormatter: {
-            type:[Function, String],
-            default:"",
-        },
-
-
-        //禁用状态
-        disabled: {
+    props: {
+        disableLabelClick:{
             type:Boolean,
             default: false,
         },
 
-        /**
-         * 选项以字符串形式输入,选项和选项之间的分割字符
-         */
-        stringElSplit:{
-            type:[String, RegExp],
-            default: _=>/\s/
+        sleepWhenOn:{
+            type:Boolean,
+            default: false,
+        },
+        sleepWhenOff:{
+            type:Boolean,
+            default: false,
         },
 
-        /**
-         * 选项的项目以字符串形式输入，value和name的分割方式
-         */
-        stringValueNameSplit:{
-            type:[String, RegExp],
-            default:","
-        }
+        //单击无效
+        sleep:{
+            type:Boolean,
+            default: false,
+        },
+
+        //开关上面的字
+        labels:{
+            type:[String, Array],
+            default:"开,关"
+        },
+
+        //定义选中或者非选中状态的值
+        values:{
+            type:[String, Array],
+            default:"",
+        },
+
+        //左边的标题
+        title: {
+            type:String,
+            default:"",
+        },
+
+        //值
+        value: {},
     },
+
 
     computed:{
+        sleeping(){
+            const m = this;
+            const {sleepWhenOn, sleepWhenOff, sleep, on, off} = m;
+
+            if (sleepWhenOn) {
+                return on;
+            }
+
+            if (sleepWhenOff) {
+                return off;
+            }
+
+            return sleep;
+        },
+
+        valueLs(){
+            let [trueValue = "true", falseValue = "false"] = labelValueParser(this.values);
+            return [trueValue, falseValue];
+        },
+
+        lableLs(){
+            let [on = "开", off = "关"] = labelValueParser(this.labels);
+            return [on, off];
+        },
+
         attrs(){
-            const m = this;
+            let [trueValue, falseValue] = this.valueLs;
+            if (this.data == VALUE_BLANK) {
+                return "";
+            }
             return {
-                ...m.$attrs,
-                ...m.selectorAttrs
+                ...this.$attrs,
+                value:this.data,
+                trueValue,
+                falseValue,
             }
         },
 
-        optionsList(){
-            return this.optionLs || this.options || this.optionsLs;
+        onLabel(){
+            return this.lableLs[0] || "开";
+        },
+
+        offLabel(){
+            return this.lableLs[1] || "关"
+        },
+
+
+        on(){
+            const {data} = this;
+            let [trueValue = true, falseValue = false] = labelValueParser(this.values);
+            return data == trueValue;
+        },
+
+        off(){
+            const {data} = this;
+            let [trueValue = true, falseValue = false] = labelValueParser(this.values);
+            return data == falseValue;
         },
     },
-
-    watch:{
-        optionsList:{
-            immediate: true,
-            async handler(ls){
-                this.parseOptions(ls);
-            }
-        },
-        ls:{
-            handler(ls) {
-                const m = this;
-
-                //寻找当前值的选项
-                let valueOption = ls.find(el => el.value == m.val);
-
-                //没有找到当前值对应的选项
-                if (!valueOption) {
-                    if (m.backupValue) {
-
-                        valueOption = ls.find(el => m.value == m.backupValue);
-                        if (valueOption) {
-                            m.val = m.backupValue;
-
-                            //派发值修改事件
-                            if (m.backupValueEmitValue) {
-                                m.$emit("input", m.backupValue);
-                            }
-                        }else{
-                            m.val = ls[0].value;
-                        }
-                    }
-                }
-            }
-        },
-
-        value:{
-            immediate: true,
-            handler(){
-                const m = this;
-
-                let value = m.value;
-
-                //如果value是空，就使用空替代来设置内部value
-                if (!value && m.blankValueReplacer) {
-                    value = m.blankValueReplacer;
-                }
-
-                let valueOption = m.ls.find(el => el.value == value);
-                if (!valueOption) {
-
-                    //对后选值的处理
-                    if (m.backupValue) {
-                        m.val = m.backupValue;
-                        if (m.backupValueEmitValue) {
-                            m.$emit("input", m.backupValue);
-                        }
-                    }else{
-                        m.val = value + "";
-                    }
-                }else{
-                    m.val = value + "";
-                }
-            }
-        },
-    },
-
     methods: {
-
-        async parseOptions(options){
-            const m = this;
-
-            let ls;
-
-
-            //是函数
-            if (typeof options == "function") {
-                ls = await options();
-
-                //字符串的形式
-            }if (typeof options == "string") {
-                ls = options.split(m.stringElSplit);
-
-                //是数组
-            }else if(Array.isArray(options)){
-                ls = options;
-            }else{
-                if (Array.isArray(m.$options.defaultLs)) {
-                    ls = m.$options.defaultLs
-                }else if(typeof m.$options.defaultLs == "function"){
-                    ls = await m.$options.defaultLs();
-                }else{
-                    ls = [{
-                        name:"请通过optionLs传入数组或者异步函数",
-                        value:-1,
-                    }]
-                }
-            }
-
-            if (typeof m.elFormatter == "function") {
-                ls = ls.map((el)=>{
-                    let [value, name] = m.elFormatter(el, {
-                        valueField: m.valueField,
-                        nameField: m.nameField
-                    }, getValue);
-                    return {value, name};
-                });
-            }
-
-            //以数组为参数
-            ls = ls.map(el=>{
-
-                const _el = el;
-
-                //切割字符串
-                if (typeof el == "string" || typeof el =="number") {
-                    el = (el+"").split(m.stringValueNameSplit);
-                }
-                if (Array.isArray(el)) {
-                    let [value, name] = el;
-                    if (name === undefined) {
-                        name = value;
-                    }
-                    return {value, name};
-                }else{
-                    return {
-                        name: getValue(el, m.nameField),
-                        value: getValue(el, m.valueField)
-                    }
-                }
-            })
-
-            m.ls = ls;
-        },
-
-        inputHandler(value) {
-            const m = this;
-
-            //radio模式，取消选择无效
-            if(m.radioMode && !value){
+        handlerClick() {
+            if (this.disableLabelClick) {
                 return;
             }
-
-            m.val = value;
-            if (value !== void 0) {
-
-                let _value = value;
-                if (typeof m.blankValueReplacer == "string") {
-                    if (m.blankValueReplacer == _value) {
-                        _value = "";
-                    }
-                }else if(m.blankValueReplacer instanceof RegExp){
-                    if (m.blankValueReplacer.test(_value)) {
-                        _value = "";
-                    }
-                }
-                m.$emit("input", _value);
-            }
+            this.$refs.switcher.$el.click();
         }
     },
 
-    created() {
+    mounted() {
         const m = this;
+        m.$watch("value", {
+            immediate: true,
+            handler(value) {
+                value = value + "";
+                let values = m.valueLs;
+                if (values.includes(value)) {
+                    m.data = m.value ;
+                } else {
+                    m.data = values[0];
+                }
+            },
+        });
     }
 }
-
-
-function getValue(object, keyLs){
-    if (typeof keyLs === "string") {
-        keyLs = keyLs.split(",")
+</script>
+<style lang="less">
+.a-switch-comp {
+    display: inline-block;
+    .__label{
+        white-space: nowrap;
+        cursor: default;
     }
+    &.sleep{
+        pointer-events: none;
+        .ivu-switch{
 
-    if (!Array.isArray(keyLs)) {
-        return ;
-    }
-
-
-    for (let i = 0; i < keyLs.length; i++) {
-        let key = keyLs[i];
-
-        if(object[key]){
-            return object[key];
         }
     }
 
-    return object[keyLs[keyLs.length - 1]];
-}
-</script>
-<style scoped lang="less">
-.a-select-comp {
-    >label{
-        padding-right: 0.5em;
+    .ivu-switch{
+        width: auto;
+        &:after {
+            transition: all 0.45s;
+            left: 0;
+            transform: translate(0, 0%);
+            margin-left: 2px;
+        }
+
+        .ivu-switch-inner{
+            transition: all 0.45s;
+            position: relative;
+            left: 0;
+            margin-left: 2.2em;
+            margin-right: 0.5em;
+        }
+        &-checked{
+            &:after {
+                left: 100%;
+                transform: translate(-100%);
+                margin-left: -2px;
+            }
+            .ivu-switch-inner{
+                margin-left: 0.5em;
+                margin-right: 2.2em;
+            }
+        }
+    }
+
+    .ivu-switch-checked:after{
     }
 }
 </style>

@@ -20,15 +20,15 @@ const labelValueParser = function(origin){
         return [];
     }
     let label;
-    if (typeof origin == "string") {
-        label = origin.split(",");
-    }else if(Array.isArray(origin)){
-        label = origin;
+    if(Array.isArray(origin)){
+        label = origin.map(l=>l+"");
+    }else{
+        label = (origin + "").split(",");
     }
     if (label.length >= 2) {
         return label;
     } else {
-        return [label, label].flat();
+        return [label, label].flat()
     }
 }
 
@@ -105,7 +105,7 @@ export default {
         },
 
         valueLs(){
-            let [trueValue = true, falseValue = false] = labelValueParser(this.values);
+            let [trueValue = "true", falseValue = "false"] = labelValueParser(this.values);
             return [trueValue, falseValue];
         },
 
@@ -115,13 +115,16 @@ export default {
         },
 
         attrs(){
-            let [trueValue = true, falseValue = false] = this.valueLs;
             if (this.data == VALUE_BLANK) {
                 return "";
             }
+            let [trueValue, falseValue] = this.valueLs;
+
+
+            const value = this.data + "";
             return {
                 ...this.$attrs,
-                value:this.data,
+                value,
                 trueValue,
                 falseValue,
             }
@@ -162,9 +165,10 @@ export default {
         m.$watch("value", {
             immediate: true,
             handler(value) {
+                value = value + "";
                 let values = m.valueLs;
                 if (values.includes(value)) {
-                    m.data = m.value;
+                    m.data = m.value ;
                 } else {
                     m.data = values[0];
                 }
