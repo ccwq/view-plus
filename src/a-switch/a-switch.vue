@@ -6,7 +6,7 @@
             ref="switcher"
             v-if="attrs"
             v-bind="attrs"
-            @input="$emit('input', $event); data=$event"
+            @input="handlerChange"
             @click.native.stop
         )
             span.__label(slot="open")   {{onLabel}}
@@ -152,6 +152,21 @@ export default {
         },
     },
     methods: {
+
+        handlerChange(value){
+            const m = this;
+            let ret;
+            if (value === "true") {
+                ret = true;
+            }else if (value === "false") {
+                ret = false;
+            }else{
+                ret = value;
+            }
+            m.$emit('input', ret);
+            m.data = ret;
+        },
+
         handlerClick() {
             if (this.disableLabelClick) {
                 return;
