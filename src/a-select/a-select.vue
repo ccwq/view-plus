@@ -33,6 +33,8 @@ const propOfOptions = {
     default: ""
 };
 
+import compact from "lodash/compact"
+
 export default {
     name: "a-select",
 
@@ -42,7 +44,6 @@ export default {
             ls:[],
         }
     },
-
 
     //用来通过简单继承实现修改默认值
     defaultLs:"",
@@ -229,18 +230,20 @@ export default {
 
             let ls;
 
-
+            //数组解析
             //是函数
             if (typeof options == "function") {
                 ls = await options();
 
-                //字符串的形式
+            //字符串的形式
             }if (typeof options == "string") {
                 ls = options.split(m.stringElSplit);
 
-                //是数组
+            //是数组
             }else if(Array.isArray(options)){
                 ls = options;
+
+            //其他类型
             }else{
                 if (Array.isArray(m.$options.defaultLs)) {
                     ls = m.$options.defaultLs
@@ -254,15 +257,26 @@ export default {
                 }
             }
 
+            //处理formater
             if (typeof m.elFormatter == "function") {
                 ls = ls.map((el)=>{
                     let [value, name] = m.elFormatter(el, {
                         valueField: m.valueField,
-                        nameField: m.nameField
+                        nameField : m.nameField,
                     }, getValue);
                     return {value, name};
                 });
             }
+
+
+            let _ls = compact(ls);
+
+            if (_ls.length != ls.length) {
+                console.warn("options中存在空选项", ls);
+            }
+
+            ls = _ls;
+
 
             //以数组为参数
             ls = ls.map(el=>{
@@ -273,12 +287,18 @@ export default {
                 if (typeof el == "string" || typeof el =="number") {
                     el = (el+"").split(m.stringValueNameSplit);
                 }
+
                 if (Array.isArray(el)) {
                     let [value, name] = el;
                     if (name === undefined) {
                         name = value;
                     }
                     return {value, name};
+                }else if(!el){
+                    return {
+                        name:"无效options",
+                        value:"-",
+                    }
                 }else{
                     return {
                         name: getValue(el, m.nameField),
@@ -286,7 +306,6 @@ export default {
                     }
                 }
             })
-
             m.ls = ls;
         },
 
