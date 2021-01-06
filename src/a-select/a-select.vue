@@ -200,7 +200,7 @@ export default {
                 let value = m.value;
 
                 //如果value是空，就使用空替代来设置内部value
-                if (!value && m.blankValueReplacer) {
+                if (value===undefined || value===null && m.blankValueReplacer) {
                     value = m.blankValueReplacer;
                 }
 
@@ -276,7 +276,6 @@ export default {
             }
 
             ls = _ls;
-
 
             //以数组为参数
             ls = ls.map(el=>{
