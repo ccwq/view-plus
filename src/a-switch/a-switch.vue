@@ -185,7 +185,7 @@ export default {
                 if (values.includes(value)) {
                     m.data = m.value ;
                 } else {
-                    m.data = values[0];
+                    m.data = values[1];
                 }
             },
         });
