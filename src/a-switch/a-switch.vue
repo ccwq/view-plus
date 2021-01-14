@@ -2,7 +2,14 @@
     .a-switch-comp(:class="{sleep:sleeping}" @click="handlerClick")
         slot(name="start" :title="title")
             span.pr05(v-if="title"): b(v-text="title")
-        i-switch(
+        Checkbox(
+            ref="switcher"
+            v-if="checkbox"
+            v-bind="attrs"
+            @input="handlerChange"
+            @click.native.stop
+        )
+        template(v-else): i-switch(
             ref="switcher"
             v-if="attrs"
             v-bind="attrs"
@@ -45,6 +52,12 @@ export default {
     },
 
     props: {
+
+        checkbox:{
+            type:Boolean,
+            default:false,
+        },
+
         disableLabelClick:{
             type:Boolean,
             default: false,
@@ -155,14 +168,21 @@ export default {
 
         handlerChange(value){
             const m = this;
+            const {checkbox, on, off, valueLs: [trueValue, falseValue]} = m;
             let ret;
-            if (value === "true") {
-                ret = true;
-            }else if (value === "false") {
-                ret = false;
+
+            if (checkbox) {
+                ret = value ? trueValue : falseValue;
             }else{
-                ret = value;
+                if (value === "true") {
+                    ret = true;
+                }else if (value === "false") {
+                    ret = false;
+                }else{
+                    ret = value;
+                }
             }
+
             m.$emit('input', ret);
             m.data = ret;
         },
