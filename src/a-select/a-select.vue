@@ -237,7 +237,7 @@ export default {
 
             //字符串的形式
             }if (typeof options == "string") {
-                ls = options.split(m.stringElSplit);
+                ls = options.split(m.stringElSplit).map(el=>el.trim());
 
             //是数组
             }else if(Array.isArray(options)){
@@ -284,7 +284,7 @@ export default {
 
                 //切割字符串
                 if (typeof el == "string" || typeof el =="number") {
-                    el = (el+"").split(m.stringValueNameSplit);
+                    el = (el+"").split(m.stringValueNameSplit).map(el=>el.trim());
                 }
 
                 if (Array.isArray(el)) {
