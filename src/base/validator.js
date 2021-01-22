@@ -103,7 +103,7 @@ export const regExp = function(reg, unMatchMessage="字符不匹配"){
  * @type {Function}
  */
 export const phoneValidator  = regExp(
-    /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(19[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/,
+    /^1[3-9]\d{9}$/,
     "手机号码格式不正确"
 )
 
