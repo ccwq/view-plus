@@ -1,6 +1,6 @@
 export default class  {
     /**
-     * 定义表格列
+     * 定义表格列, #开头的字符串表示slot
      * 举例1 tableColumnDef("id", "编号", 50, "center", function(){})
      * 举例2 tableColumnDef("id", "编号", "center", function(){}, 50)
      * 举例3 tableColumnDef("id", "编号", {width, render})
@@ -10,12 +10,16 @@ export default class  {
      */
     static tableColumnDef(key, title, ...rest){
         const m = this;
-        let align, width, render, others;
+        let align, width, render, others, slot;
         rest.forEach(el=>{
             if (m.isPlainObject(el)) {
                 others = el;
             }else if (typeof el == "string") {
-                align = el;
+                if (el.startsWith("#")) {
+                    slot = el.substr(1);
+                }else{
+                    align = el;
+                }
             }else if (typeof el == "number") {
                 width = el;
             }else if (typeof el == "function") {
@@ -23,7 +27,11 @@ export default class  {
             }
         })
 
-        return {key, title, align, width, render, ...others};
+        let col = {key, title, align, width, render, ...others};
+        if (slot) {
+            col.slot = slot;
+        }
+        return col;
     }
 
 
