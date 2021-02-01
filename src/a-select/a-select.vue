@@ -72,7 +72,7 @@ export default {
             // type:[String, Number],
             default:"",
             validator(v){
-                if (/string|number/.test(typeof v)) {
+                if (/string|number|boolean|/.test(typeof v)) {
                     return true;
                 }else{
                     console.warn("dd-select接受到了非法类型:", v);
@@ -199,12 +199,18 @@ export default {
 
                 let value = m.value;
 
+                m.__valueType == typeof value;
+
+                if (typeof value != Number || typeof value != Number) {
+                    value = value + "";
+                }
+
                 //如果value是空，就使用空替代来设置内部value
                 if (value===undefined || value===null && m.blankValueReplacer) {
                     value = m.blankValueReplacer;
                 }
 
-                let valueOption = m.ls.find(el => el.value == value);
+                let valueOption = m.ls.find(el => el.value === value);
                 if (!valueOption) {
 
                     //对后选值的处理
@@ -214,10 +220,10 @@ export default {
                             m.$emit("input", m.backupValue);
                         }
                     }else{
-                        m.val = value + "";
+                        m.val = value;
                     }
                 }else{
-                    m.val = value + "";
+                    m.val = value;
                 }
             }
         },
@@ -278,13 +284,13 @@ export default {
             ls = _ls;
 
             //以数组为参数
-            ls = ls.map(el=>{
+            ls = ls.map(el => {
 
                 const _el = el;
 
                 //切割字符串
-                if (typeof el == "string" || typeof el =="number") {
-                    el = (el+"").split(m.stringValueNameSplit).map(el=>el.trim());
+                if (typeof el == "string" || typeof el == "number") {
+                    el = (el + "").split(m.stringValueNameSplit).map(el => el.trim());
                 }
 
                 if (Array.isArray(el)) {
@@ -293,18 +299,25 @@ export default {
                         name = value;
                     }
                     return {value, name};
-                }else if(!el){
+                } else if (!el) {
                     return {
-                        name:"无效options",
-                        value:"-",
+                        name: "无效options",
+                        value: "-",
                     }
-                }else{
+                } else {
                     return {
                         name: getValue(el, m.nameField),
                         value: getValue(el, m.valueField)
                     }
                 }
+            });
+
+            ls.forEach(el=>{
+                if (typeof el.value != Number && typeof el.value != Number) {
+                    el.alue = el.value + "";
+                }
             })
+
             m.ls = ls;
         },
 
@@ -329,6 +342,11 @@ export default {
                         _value = "";
                     }
                 }
+
+                if (m.__valueType == "boolean") {
+                    _value = _value == "false" ? false : true;
+                }
+
                 m.$emit("input", _value);
             }
         }
