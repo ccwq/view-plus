@@ -604,31 +604,30 @@
      */
     function transformValidator(validators){
         var vm = this;
-        if (Array.isArray(validators)) {
-            return validators.map(validator=>{
-                //数组元素是函数，需要单独封装
-                if (typeof validator == "function") {
-                    return {validator}
-                }else{
-                    return validator;
-                }
-            })
-        }else if (typeof validators == "function") {
-            /**
-             * 使用具名函数，名称以$开头,则为生成器
-             * function $(vm){} 会被当做验证器的生成器
-             * function (){}   会被直接当成验证器，函数是否按规则具名来区分
-             */
-            if (/^\$/.test(validators.name)) {
-                return transformValidator.call(vm, validators(vm));
-            }else{
-                return [{validator: validators}];
-            }
-        }else if(validators.validator){
-            return [validators];
-        }else{
-            return [];
+        //使用vm注入也会传入数组，根据第一个参数是否为字符串进行区分
+        if (Array.isArray(validators) && typeof validators[0] == 'string') {
+            let [injectType, validator] = validators;
+            validators = {injectType, validator}
         }
+
+        if (!Array.isArray(validators)) {
+            validators = [validators];
+        }
+
+        return validators.map(validator => {
+            //数组元素是函数，需要单独封装
+            if (typeof vdr == "function") {
+                return {validator}
+            } else if (isPlainObject(validator)) {
+                let {injectType, validator: va} = validator;
+                if (injectType == "vm") {
+                    return va(vm);
+                } else {
+                    console.warn("未开放注入类型:" + injectType);
+                }
+            }
+            return validator;
+        });
     }
 
 

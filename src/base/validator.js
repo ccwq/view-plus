@@ -52,6 +52,7 @@ export const notNull = function (fieldName) {
     }
 }
 
+
 /**
  * 重复密码验证
  * @param vm 组件实力
@@ -59,26 +60,60 @@ export const notNull = function (fieldName) {
  * @param unMatchMessage 匹配失败提示文字
  * @returns {Function}
  */
-export const sameAs = function(vm, field, unMatchMessage="两次输入的密码不一致"){
+const _sameAs = function(vm, field, unMatchMessage="两次输入的密码不一致"){
     return function(rule, value, callback){
-        if(trim(value) !== trim(get(vm,field))){
+        console.log(value);
+        console.log(field);
+        console.log(vm);
+        console.log(_.get(vm,field));
+        if(trim(value) !== trim(_.get(vm,field))){
             callback(new Error(unMatchMessage))
             return;
         }
-        debugger;
         callback();
     }
 }
 
 
-export const sameAs2 = function(getter, unMatchMessage="两次输入的密码不一致"){
+/**
+ * sameAs2 getter callback
+ * @callback sameAsGetter
+ * @param vm 当前表单对象
+ * @return 返回要比对的值
+ */
+
+
+/**
+ *
+ * @param {sameAsGetter} getter
+ * @param unMatchMessage
+ * @returns {function(*, *=, *): undefined}
+ * @private
+ */
+const _sameAs2 = function(vm, getter, unMatchMessage="两次输入的密码不一致"){
     return function(rule, value, callback){
-        if(trim(value) !== getter()){
+        if(trim(value) !== getter(vm)){
             callback(new Error(unMatchMessage))
             return;
         }
         callback();
     }
+}
+
+
+/**
+ * samaAs
+ * @param field 当前字段改变时要与之匹配的字段的名称
+ * @param unMatchMessage
+ * @return {[string, (function(*): function(*, *=, *): undefined)]}
+ */
+export const sameAs = function(field, unMatchMessage="两次输入的密码不一致"){
+    return [
+        "vm",
+        function(vm){
+            return _sameAs(vm, field, unMatchMessage)
+        }
+    ]
 }
 
 
