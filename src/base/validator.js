@@ -116,6 +116,21 @@ export const sameAs = function(field, unMatchMessage="两次输入的密码不�
     ]
 }
 
+/**
+ * sameAs2 使用回调的形式获取
+ * @param getter
+ * @param unMatchMessage
+ * @return {[string, (function(*): function(*, *=, *): undefined)]}
+ */
+export const sameAs2 = function(getter, unMatchMessage="两次输入的密码不一致"){
+    return [
+        "vm",
+        function(vm){
+            return _sameAs(vm, getter, unMatchMessage)
+        }
+    ]
+}
+
 
 /**
  * 正则验证规则生成器
