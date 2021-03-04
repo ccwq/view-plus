@@ -102,8 +102,6 @@
                         :disabled="disabled"
                         :readonly="readonly"
                         v-bind="item.attrs"
-                        :true-value="item.trueValue"
-                        :false-value="item.falseValue"
                         :value='form[item.prop]'
                         @input="formChangeHandler(item, $event)"
                         :class="item.itemClass"
@@ -122,6 +120,7 @@
 </template>
 <script>
     import Utils from "../Utils";
+    import get from "lodash/get"
     const {
         isPlainObject,
         parseDate,
@@ -327,6 +326,7 @@
 
                         m.items_clone.forEach(item=>{
                             let key = item.prop;
+
                             //多字段表单项
                             if (item.originProp) {
                                 key = item.key;
@@ -338,11 +338,24 @@
                                 }, {});
                             }else{
                                 if (typeof model[key] != "undefined") {
-                                    form[key] = model[key];
+                                    setFormKeyValue(form, item, model[key]);
                                 }
                             }
                         })
                         m.form = form;
+
+                        function setFormKeyValue(form, item, value){
+                            if (item.type == "bool") {
+                                let val;
+                                if (value === item.trueValue) {
+                                    val = val
+                                }else{
+                                    val = item.falseValue;
+                                }
+                            }
+
+                            form[item.prop] = value;
+                        }
                     }
                 }
             },
@@ -420,16 +433,12 @@
                             item.formItemClass = defFormItemClass;
                         }
 
-                        //增加默认属性
-                        if (/^(text|textarea|password)$/.test(item.type)) {
-
-                        }
+                        setDefaultItemValue(item);
                     })
 
                     //设置form键和值
                     m.form = items.reduce((form, item)=>{
                         if(item.prop){
-                            setDefaultItemValue(item);
                             resetFormValueByItem(form, item);
                         }
 
@@ -635,15 +644,30 @@
      * 设置item的默认属性
      */
     function setDefaultItemValue(item){
-        if (/^(bool|boolean)$/.test(item.type)) {
+        const {type} = item;
+        if (/^(bool|boolean)$/.test(type)) {
             item.checkboxLabel = item.checkboxLabel || "";
-            if (typeof item.trueValue == "undefined") {
-                item.trueValue = true;
+
+            let attrs = item.attrs || {};
+            if (typeof item.trueValue != "undefined") {
+                attrs.trueValue = item.trueValue;
+            }
+            if (typeof item.falseValue != "undefined") {
+                attrs.falseValue = item.falseValue;
+            }
+            item.attrs = attrs;
+
+            if (typeof item.attrs.trueValue == "undefined") {
+                item.attrs.trueValue = true;
             }
 
-            if (typeof item.falseValue == "undefined") {
-                item.falseValue = false;
+            if (typeof item.attrs.falseValue == "undefined") {
+                item.attrs.falseValue = false;
             }
+        }
+        //增加默认属性
+        else if (/^(text|textarea|password)$/.test(item.type)) {
+
         }
     }
 
@@ -654,21 +678,30 @@
      */
     function getDefaultValueByFormItemOption(item){
         let value = item.value;
-
-
-        //设置默认值
-        if (typeof value == "undefined") {
-            if (/^bool/.test(item.type)) {
-                value = item.falseValue;
-            }else if (item.type == "number") {
-                value = 0;
-            }else if(item.type=="select" && item.options && item.options.length){
-                value = item.options[0].value;
-            }else{
-                value = "";
+        const {type, props, attrs} = item;
+        const {trueValue, falseValue, max, min} = attrs || {};
+        if (/^bool/.test(item.type)) {
+            if (value !== trueValue) {
+                value = falseValue;
             }
+        }else if (item.type == "number") {
+            if (typeof value != "number") {
+                value = 0;
+            }
+            if (typeof max == "number") {
+                if (value > max) {
+                    value = max;
+                }
+            }else if (typeof min == "number") {
+                if (value < min) {
+                    value = min;
+                }
+            }
+        }else if(item.type=="select" && item.options && item.options.length){
+            value = get(item, "options.0.value");
+        }else{
+            value = "";
         }
-
         return value;
     }
 
