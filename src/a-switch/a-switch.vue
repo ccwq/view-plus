@@ -6,7 +6,7 @@
             ref="switcher"
             v-if="checkbox"
             v-bind="attrs"
-            @input="handlerChange"
+            @input="handlerChange($event, true)"
             @click.native.stop
         )
         template(v-else): i-switch(
@@ -166,9 +166,19 @@ export default {
     },
     methods: {
 
-        handlerChange(value){
+        /**
+         * 状态改变进入,
+         * @param value 改变的值switch模式为true false,checkbox模式为trueValue, falseValue
+         * @param isValue 如果checkbox模式，该值true
+         */
+        handlerChange(value, isValue=false){
             const m = this;
             const {checkbox, on, off, valueLs: [trueValue, falseValue]} = m;
+
+            if (isValue) {
+                value = value === trueValue;
+            }
+
             let ret;
 
             if (checkbox) {
