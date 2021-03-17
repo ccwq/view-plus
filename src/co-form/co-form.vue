@@ -440,6 +440,7 @@
                     m.form = items.reduce((form, item)=>{
                         if(item.prop){
                             resetFormValueByItem(form, item);
+                            form[item.prop] = item.value;
                         }
 
                         //表单初始化时候执行
@@ -678,7 +679,7 @@
      */
     function getDefaultValueByFormItemOption(item){
         let value = item.value;
-        const {type, props, attrs} = item;
+        const {type, props, attrs, prop} = item;
         const {trueValue, falseValue, max, min} = attrs || {};
         if (/^bool/.test(item.type)) {
             if (value !== trueValue) {
