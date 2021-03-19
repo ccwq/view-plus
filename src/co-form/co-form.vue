@@ -57,7 +57,6 @@
                         :disabled="disabled"
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
-                        :readonly="readonly"
                     )
                 template(v-if="/^(date)$/.test(item.type)")
                     DatePicker(
@@ -645,31 +644,40 @@
      * 设置item的默认属性
      */
     function setDefaultItemValue(item){
-        const {type} = item;
+        const {
+            type,
+            attrs = {},
+            disabled
+        } = item;
         if (/^(bool|boolean)$/.test(type)) {
             item.checkboxLabel = item.checkboxLabel || "";
 
-            let attrs = item.attrs || {};
             if (typeof item.trueValue != "undefined") {
                 attrs.trueValue = item.trueValue;
             }
             if (typeof item.falseValue != "undefined") {
                 attrs.falseValue = item.falseValue;
             }
-            item.attrs = attrs;
 
-            if (typeof item.attrs.trueValue == "undefined") {
-                item.attrs.trueValue = true;
+            if (typeof attrs.trueValue == "undefined") {
+                attrs.trueValue = true;
             }
 
-            if (typeof item.attrs.falseValue == "undefined") {
-                item.attrs.falseValue = false;
+            if (typeof attrs.falseValue == "undefined") {
+                attrs.falseValue = false;
             }
-        }
         //增加默认属性
-        else if (/^(text|textarea|password)$/.test(item.type)) {
+        } else if (/^(text|textarea|password)$/.test(item.type)) {
 
         }
+
+        //对disabled的单独处理
+        if (typeof disabled != "undefined") {
+            attrs.disabled = disabled;
+            item.attrs = attrs;
+        }
+
+        item.attrs = attrs;
     }
 
 
