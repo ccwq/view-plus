@@ -33,7 +33,8 @@ const propOfOptions = {
     default: ""
 };
 
-import compact from "lodash/compact"
+import {getValue} from "ipro/src/object/ObjectUtils";
+import {all2valueName as parseOptions} from "ipro/src/baseUtil";
 
 export default {
     name: "a-select",
@@ -132,7 +133,7 @@ export default {
          */
         stringElSplit:{
             type:[String, RegExp],
-            default: _=>/\s/
+            default: _=>/\s+/
         },
 
         /**
@@ -162,7 +163,16 @@ export default {
         optionsList:{
             immediate: true,
             async handler(ls){
-                this.parseOptions(ls);
+                const m = this;
+                m.ls = await parseOptions(
+                    ls,
+                    m.stringElSplit,
+                    m.$options.defaultLs,
+                    m.elFormatter,
+                    m.stringValueNameSplit,
+                    m.nameField,
+                    m.valueField
+                );
             }
         },
         ls:{
@@ -231,96 +241,6 @@ export default {
 
     methods: {
 
-        async parseOptions(options){
-            const m = this;
-
-            let ls;
-
-            //数组解析
-            //是函数
-            if (typeof options == "function") {
-                ls = await options();
-
-            //字符串的形式
-            }if (typeof options == "string") {
-                ls = options.split(m.stringElSplit).map(el=>el.trim());
-
-            //是数组
-            }else if(Array.isArray(options)){
-                ls = options;
-
-            //其他类型
-            }else{
-                if (Array.isArray(m.$options.defaultLs)) {
-                    ls = m.$options.defaultLs
-                }else if(typeof m.$options.defaultLs == "function"){
-                    ls = await m.$options.defaultLs();
-                }else{
-                    ls = [{
-                        name:"请通过optionLs传入数组或者异步函数",
-                        value:-1,
-                    }]
-                }
-            }
-
-            //处理formater
-            if (typeof m.elFormatter == "function") {
-                ls = ls.map((el)=>{
-                    let [value, name] = m.elFormatter(el, {
-                        valueField: m.valueField,
-                        nameField : m.nameField,
-                    }, getValue);
-                    return {value, name};
-                });
-            }
-
-
-            let _ls = compact(ls);
-
-            if (_ls.length != ls.length) {
-                console.warn("options中存在空选项", ls);
-            }
-
-            ls = _ls;
-
-            //以数组为参数
-            ls = ls.map(el => {
-
-                const _el = el;
-
-                //切割字符串
-                if (typeof el == "string" || typeof el == "number") {
-                    el = (el + "").split(m.stringValueNameSplit).map(el => el.trim());
-                }
-
-                if (Array.isArray(el)) {
-                    let [value, name] = el;
-                    if (name === undefined) {
-                        name = value;
-                    }
-                    return {value, name};
-                } else if (!el) {
-                    return {
-                        name: "无效options",
-                        value: "-",
-                    }
-                } else {
-                    return {
-                        name: getValue(el, m.nameField),
-                        value: getValue(el, m.valueField)
-                    }
-                }
-            });
-
-            ls.forEach(el=>{
-                if (typeof el.value != Number && typeof el.value != Number) {
-                    el.alue = el.value + "";
-                }
-            })
-
-            m.ls = ls;
-        },
-
         inputHandler(value) {
             const m = this;
 
@@ -357,27 +277,6 @@ export default {
     }
 }
 
-
-function getValue(object, keyLs){
-    if (typeof keyLs === "string") {
-        keyLs = keyLs.split(",")
-    }
-
-    if (!Array.isArray(keyLs)) {
-        return ;
-    }
-
-
-    for (let i = 0; i < keyLs.length; i++) {
-        let key = keyLs[i];
-
-        if(object[key]){
-            return object[key];
-        }
-    }
-
-    return object[keyLs[keyLs.length - 1]];
-}
 </script>
 <style scoped lang="less">
 .a-select-comp {

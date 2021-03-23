@@ -324,8 +324,8 @@
                         let form = Object.assign({}, m.form);
 
                         m.items_clone.forEach(item=>{
-                            let key = item.prop;
-
+                            const {prop} = item;
+                            let key = prop;
                             //多字段表单项
                             if (item.originProp) {
                                 key = item.key;
@@ -336,20 +336,21 @@
                                     return v;
                                 }, {});
                             }else{
-                                if (typeof model[key] != "undefined") {
-                                    setFormKeyValue(form, item, model[key]);
-                                }
+                                setFormKeyValue(form, item, model[key]);
+
+
                             }
                         })
                         m.form = form;
-
                         function setFormKeyValue(form, item, value){
+                            const {attrs} = item;
+                            // if (typeof form[key] != "undefined") {}
                             if (item.type == "bool") {
                                 let val;
-                                if (value === item.trueValue) {
+                                if (value === attrs.trueValue) {
                                     val = val
                                 }else{
-                                    val = item.falseValue;
+                                    val = attrs.falseValue;
                                 }
                             }
 
@@ -488,7 +489,6 @@
             //计算最大表单label的宽度
             calcLabelWidth(){
                 const m = this;
-
                 if (m.forceLabelWidth) {
                     return m.forceLabelWidth;
                 }
@@ -588,10 +588,11 @@
              * @param value
              */
             booleanCheckLabelTransf(item, value) {
+                const {attrs} = item;
                 if (typeof item.checkboxLabel == "undefined") {
                     return ""
                 }else if (Array.isArray(item.checkboxLabel)) {
-                    let retIndex = value === item.trueValue ? 0 : 1;
+                    let retIndex = value === attrs.trueValue ? 0 : 1;
                     return item.checkboxLabel[retIndex];
                 }else{
                     return item.checkboxLabel;
@@ -677,6 +678,7 @@
             item.attrs = attrs;
         }
 
+
         item.attrs = attrs;
     }
 
@@ -687,8 +689,9 @@
      */
     function getDefaultValueByFormItemOption(item){
         let value = item.value;
-        const {type, props, attrs, prop} = item;
+        const {type, props, attrs, prop, options} = item;
         const {trueValue, falseValue, max, min} = attrs || {};
+
         if (/^bool/.test(item.type)) {
             if (value !== trueValue) {
                 value = falseValue;
@@ -706,10 +709,13 @@
                     value = min;
                 }
             }
-        }else if(item.type=="select" && item.options && item.options.length){
+        }else if(item.type=="select" && get(options, "length")){
+            const valIndex = options.find()
             value = get(item, "options.0.value");
+
+
         }else{
-            value = "";
+            // value = "";
         }
         return value;
     }
