@@ -4792,10 +4792,10 @@ ipaddr.js@1.9.1, ipaddr.js@^1.9.0:
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
   integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
 
-ipro@^1.0.51:
-  version "1.0.51"
-  resolved "https://registry.yarnpkg.com/ipro/-/ipro-1.0.51.tgz#419860f112c5e05eb91a32f33486bedcfd50bc47"
-  integrity sha512-X6euZyYwC5W3zreOr8KHh5w/DSYXevEQ+uxQ9zh71BF3bBOymAgaa0/tZkrqYAQJe5xFRPaJ8+ockJkhjk/vlg==
+ipro@^1.0.53:
+  version "1.0.53"
+  resolved "https://registry.yarnpkg.com/ipro/-/ipro-1.0.53.tgz#baa4dd5f3e687f9bc9f1e6789742781f3a87d7e0"
+  integrity sha512-7ymV583PYMPt+ZsTcH4xvatAQUvtSg6R3GSpjVqQ4FGWytNFsG5H/sP91bm80ZlzBNjRmB87+JRsSJ9HtEvEQA==
   dependencies:
     date-prototype "^1.0.0"
     fast-gbk "^0.0.1"
