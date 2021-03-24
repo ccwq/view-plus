@@ -184,7 +184,7 @@ export default {
             // form,
             labelWidth: 80,
 
-            form_nature:"",
+            form:{},
 
             items_clone:[],
         }
@@ -256,16 +256,6 @@ export default {
         },
     },
     computed: {
-
-        //用来抓取错误
-        form:{
-            set(v){
-                this.form_nature = v;
-            },
-            get(v){
-                return this.form_nature;
-            }
-        },
 
         items_clone_filtered() {
             const m = this;
@@ -372,7 +362,7 @@ export default {
                     }
                 })
 
-                m.form = form;
+                m.setForm(form);
 
                 function setFormKeyValue(form, item, value){
                     const {attrs, prop} = item;
@@ -458,7 +448,7 @@ export default {
                 })
 
                 //设置form键和值
-                m.form = items.reduce((form, item)=>{
+                let _form = items.reduce((form, item)=>{
                     if(item.prop){
                         resetFormValueByItem(form, item);
                         form[item.prop] = item.value;
@@ -471,6 +461,7 @@ export default {
 
                     return form;
                 }, {});
+                m.setForm(_form);
 
                 //赋值，浅克隆
                 m.items_clone = [...items];
@@ -562,7 +553,7 @@ export default {
             m.items_clone.filter(el => el.prop).forEach((item) => {
                 resetFormValueByItem(form, item);
             });
-            m.form = form;
+            m.setForm(form);
         },
 
         //仅重置验证
@@ -618,7 +609,16 @@ export default {
             }else{
                 return item.checkboxLabel;
             }
-        }
+        },
+
+
+        setForm(form){
+            const m = this;
+            if (!form) {
+                debugger;
+            }
+            m.form = form;
+        },
     },
 
     mounted() {
@@ -730,11 +730,19 @@ function getDefaultValueByFormItemOption(item){
                 value = min;
             }
         }
-    }else if(item.type=="select" && get(options, "length")){
+    }else if(item.type=="select"){
         let _options = parseOptions(options);
-        const valIndex = _options.find(el => el.value == value);
-        if (valIndex == -1) {
-            value = get(item, "_options.0.value");
+        if (_options.then) {
+            console.warn("options为promise无法设置默认值");
+            value = "";
+        }else{
+
+            if (_options.find) {
+                const valIndex = _options.find(el => el.value == value);
+                if (valIndex == -1) {
+                    value = get(item, "_options.0.value");
+                }
+            }
         }
     }else{
         // value = "";
