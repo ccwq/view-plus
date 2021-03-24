@@ -164,15 +164,18 @@ export default {
             immediate: true,
             async handler(ls){
                 const m = this;
-                m.ls = await parseOptions(
+                let _ls = await parseOptions(
                     ls,
                     m.stringElSplit,
                     m.$options.defaultLs,
                     m.elFormatter,
                     m.stringValueNameSplit,
                     m.nameField,
-                    m.valueField
+                    m.valueField,
+                    typeof ls == "string"
                 );
+
+                m.ls = _ls;
             }
         },
         ls:{
