@@ -1,3 +1,5 @@
+import {all2date} from "ipro/src/date/DateUtils";
+
 export default class  {
     /**
      * 定义表格列, #开头的字符串表示slot
@@ -143,23 +145,7 @@ export default class  {
      * @returns {Date}
      */
     static parseDate(input) {
-
-        //数字或者字符串时间戳
-        if (typeof input == "number" || /^\d+$/.test(input + "")) {
-            return new Date(input * 1);
-
-            //空对象
-        } else if (!input) {
-            return new Date();
-
-            //日期对象
-        }else if (input.constructor == Date) {
-            return input;
-        }
-
-        //日期字符串
-        var parts = input.split(/[-:\sTZ\+年月日时分秒]/);
-        return new Date(parts[0], parts[1] - 1, parts[2], parts[3] || 0, parts[4] || 0, parts[5] || 0);
+        return all2date(input);
     }
 
     /**

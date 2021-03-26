@@ -487,8 +487,6 @@ export default {
             const {prop, formater: dateFormater, type} = item;
             let _value = value;
             const oldValue = m.form[prop];
-
-
             if (item.originProp) {
                 item.originProp.forEach(key=>{
                     if (key in value) {
@@ -497,6 +495,7 @@ export default {
                 })
             }
 
+            //日期类型特殊处理
             if (type.startsWith("date")) {
 
                 const tmp = parseDate(value);
