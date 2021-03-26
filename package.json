@@ -15,7 +15,7 @@
         "build:all": "cross-env NODE_ENV=production  node build"
     },
     "dependencies": {
-        "ipro": "^1.0.53",
+        "ipro": "^1.0.54",
         "lodash": "^4.17.15",
         "tree-crawl": "^1.0.5"
     },

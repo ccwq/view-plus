@@ -63,7 +63,7 @@
                         transfer
                         :disabled="disabled"
                         :value="_dateTransform(form[item.prop])"
-                        @input="formChangeHandler(item, _dateTransform($event, 'Number'))"
+                        @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
@@ -476,7 +476,6 @@ export default {
 
     methods: {
 
-
         //回车
         handlerEnter(e, item, index){
             const m = this;
@@ -485,6 +484,11 @@ export default {
 
         formChangeHandler(item,value) {
             const m = this;
+            const {prop, formater: dateFormater, type} = item;
+            let _value = value;
+            const oldValue = m.form[prop];
+
+
             if (item.originProp) {
                 item.originProp.forEach(key=>{
                     if (key in value) {
@@ -492,7 +496,41 @@ export default {
                     }
                 })
             }
-            m.form[item.prop] = value;
+
+            if (type.startsWith("date")) {
+
+                const tmp = parseDate(value);
+                let formater = "Y-m-d";
+
+                //设置了日期格式
+                if (dateFormater) {
+                    _value = tmp.format(dateFormater);
+                }else if (oldValue instanceof Date) {
+                    _value = tmp;
+                }else if (typeof oldValue == "number") {
+                    _value = tmp * 1;
+                }else if(!oldValue){
+                    _value = tmp.format("%s");
+                }else if (typeof oldValue == "string") {
+                    let leng = _value.trim().split(/[\s\:\-]/);
+                    if (leng == 2) {
+                        formater = "Y-m";
+                    }else if (leng == 3) {
+                        formater = "Y-m-d";
+                    }else if(leng == 7){
+                        formater = "Y-m-d h:i:s";
+                    }else if (length == 8) {
+                        formater = "%Y-%m-%d %H:%M:%S:%N"
+                    }
+                    _value = tmp.format(formater);
+                }
+            }
+
+            if (oldValue === _value) {
+                return;
+            }
+
+            m.form[prop] = _value;
 
             //派发表单改变
             m.$emit("input", m.plainForm);
