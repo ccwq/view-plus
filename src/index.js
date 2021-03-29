@@ -25,7 +25,7 @@ export const columnDef = function(key, title, ...rest){
     const m = this;
     let align, width, render, others, slot;
     rest.forEach(el=>{
-        if (m.isPlainObject(el)) {
+        if (isPlainObject(el)) {
             others = el;
         }else if (typeof el == "string") {
             if (el.startsWith("#")) {
