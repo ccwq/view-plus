@@ -47,6 +47,8 @@
                 v-show="!item.hideWhen(form)"
                 :class="item.formItemClass"
             )
+                template(v-if="item.type=='label'")
+                    span(v-bind="item.attrs") {{form[item.prop]}}
                 template(v-if="/^(text|textarea|password|)$/.test(item.type)")
                     Input(
                         :type="item.type"
@@ -54,14 +56,12 @@
                         @input="formChangeHandler(item, $event)"
                         @keydown.native.13="handlerEnter($event, item, index)"
                         v-bind="item.attrs"
-                        :disabled="disabled"
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
                     )
                 template(v-if="/^(date)$/.test(item.type)")
                     DatePicker(
                         transfer
-                        :disabled="disabled"
                         :value="_dateTransform(form[item.prop])"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
@@ -71,7 +71,6 @@
                     )
                 template(v-if="/^(number|int)$/.test(item.type)")
                     InputNumber(
-                        :disabled="disabled"
                         :readonly="readonly"
                         :value="_numberTransform(form[item.prop])"
                         @input="formChangeHandler(item, $event)"
@@ -83,7 +82,6 @@
 
                 template(v-else-if="item.type==='select'")
                     Select(
-                        :disabled="disabled || readonly"
                         :value="form[item.prop]"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
@@ -417,10 +415,7 @@ export default {
                 //设置默认text，并且进行复制
                 items.forEach((item,index)=>{
                     item.type = item.type || "text";
-
                     item.hideWhen = _=>false;
-
-
                     let defItemClass = `co-form-input co-input-type-${item.type} co-input-prop-${item.prop}`;
 
                     if (item.itemClass) {
@@ -428,7 +423,6 @@ export default {
                     }else{
                         item.itemClass = defItemClass;
                     }
-
 
                     //2的倍数
                     let mult2Str = !(index % 2) ? " mult-2" : "";
@@ -883,7 +877,6 @@ function resetFormValueByItem(form, item){
     &.min-gap{
         .ivu-form-item{
             margin-bottom: 15px;
-
         }
 
         .ivu-form-item-error-tip{
@@ -897,6 +890,16 @@ function resetFormValueByItem(form, item){
         }
     }
 
+    &.__form_item_inline_flex{
+        .ivu-form-item{
+            display: inline-flex;
+        }
+    }
+    &.__form_item_flex{
+        .ivu-form-item{
+            display: flex;
+        }
+    }
 
 
     .ivu-input-wrapper, .ivu-select {
