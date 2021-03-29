@@ -1,4 +1,6 @@
 import {all2date} from "ipro/src/date/DateUtils";
+import {columnDef} from "./index";
+
 
 export default class  {
     /**
@@ -11,29 +13,7 @@ export default class  {
      * @param rest
      */
     static tableColumnDef(key, title, ...rest){
-        const m = this;
-        let align, width, render, others, slot;
-        rest.forEach(el=>{
-            if (m.isPlainObject(el)) {
-                others = el;
-            }else if (typeof el == "string") {
-                if (el.startsWith("#")) {
-                    slot = el.substr(1);
-                }else{
-                    align = el;
-                }
-            }else if (typeof el == "number") {
-                width = el;
-            }else if (typeof el == "function") {
-                render = el;
-            }
-        })
-
-        let col = {key, title, align, width, render, ...others};
-        if (slot) {
-            col.slot = slot;
-        }
-        return col;
+        return columnDef(key, title, ...rest);
     }
 
 
