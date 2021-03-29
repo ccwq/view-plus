@@ -1,6 +1,6 @@
 import aTable from "./a-table";
 import coFrom from "./co-form"
-import _ from "lodash";
+import isPlainObject from "lodash/isPlainObject"
 
 export default {
     install(Vue, options = {}) {

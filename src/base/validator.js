@@ -62,10 +62,6 @@ export const notNull = function (fieldName) {
  */
 const _sameAs = function(vm, field, unMatchMessage="两次输入的密码不一致"){
     return function(rule, value, callback){
-        console.log(value);
-        console.log(field);
-        console.log(vm);
-        console.log(_.get(vm,field));
         if(trim(value) !== trim(_.get(vm,field))){
             callback(new Error(unMatchMessage))
             return;

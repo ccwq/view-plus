@@ -5,6 +5,7 @@
         template(#default="{height}")
             Table.__table(
                 :highlight-row="selectMode"
+                :columns="tColumns"
                 v-bind=`
                     {
                         ...attrs,
@@ -26,6 +27,8 @@
 <script>
     import vBox from "vue-iplus/src/comp/v-box"
     import _isEqual from "lodash/isEqual";
+    import _get from "lodash/get";
+    import {columnDef} from "../index";
     export default {
         name: "a-table",
         components: {vBox},
@@ -43,10 +46,38 @@
                 selectIndex:-1,
 
                 dataLs:[],
+
+                tColumns:[],
             }
         },
 
         props:{
+
+            /**
+             * 行列合并的处理
+             */
+            spanMethod: {
+                type:[Function, String],
+                default:"",
+            },
+
+
+            /**
+             * 定义同table的column配置
+             */
+            columns:{
+                type:Array,
+                default:_=>[],
+            },
+
+            /**
+             * 这些列相邻单元数据相同将会合并
+             */
+            rowspanKeyLs:{
+                default:"",
+                type:[String, Array],
+            },
+
             name:String,
             offset:{
                 type:Number,
@@ -85,10 +116,24 @@
 
         computed: {
             attrs(){
-                return {
+                const m = this;
+
+                const {spanMethod, rowspanKeyLs} = m;
+
+                let ret = {
                     ...this.$attrs,
                     data: this.dataLs
+                };
+
+                if (rowspanKeyLs && rowspanKeyLs.length) {
+                    ret.spanMethod = m.spanMethodCallback;
                 }
+
+                if (spanMethod) {
+                    ret.spanMethod = spanMethod;
+                }
+
+                return ret;
             },
 
             listeners(){
@@ -119,6 +164,54 @@
         },
 
         watch:{
+            columns:{
+                immediate:true,
+                handler(columns){
+                    const m = this;
+                    let {rowspanKeyLs} = m;
+                    columns = columns.map(el => {
+                        if (Array.isArray(el)) {
+                            return columnDef(...el);
+                        } else {
+                            return el;
+                        }
+                    });
+
+                    if (rowspanKeyLs) {
+                        if (typeof rowspanKeyLs == "string") {
+                            rowspanKeyLs = rowspanKeyLs.trim().split(",")
+                        }
+
+                        const [colDicByKey, colIndexDicByKey] = columns.reduce((result, col, index)=>{
+                            const [colDicByKey,colIndexDicByKey ] = result;
+                            colDicByKey[col.key] = col;
+                            colIndexDicByKey[col.key] = index;
+                            return result;
+                        }, [{}, {}]);
+
+                        m.__rowspanCache = rowspanKeyLs
+
+                            //去除不存在的列
+                            .filter(key => colDicByKey[key])
+
+                            //转换形象
+                            .map(key=>{
+                                    return {
+                                        key,
+                                        index       :   colIndexDicByKey[key],
+                                        column      :   colDicByKey[key],
+                                        data        :   "",
+                                    }
+                                }
+                            )
+                        ;
+                    }else{
+                        m.__rowspanCache;
+                    }
+
+                    m.tColumns = columns;
+                },
+            },
             data: {
                 deep:true,
                 immediate: true,
@@ -130,6 +223,30 @@
                     }else{
                         ret = data.map((el) => ({...el}));
                     }
+
+
+                    m.__rowspanCache.forEach(cb => {
+                        const {key, index, column} = cb;
+                        let _data = Array(data.length).fill(0);
+                        data.reduce((ret, row, _index) => {
+                            let value = row[key];
+
+                            if (ret.value == value) {
+                                ret.count++;
+                                _data[ret.point] = ret.count;
+                            } else {
+                                ret.count = 1;
+                                ret.point = _index;
+                                _data[_index] = 1;
+                            }
+
+                            ret.value = value;
+                            return ret;
+                        }, {count: 1, value: "", point: 0});
+                        cb.data = _data;
+                    });
+
+
 
                     m.dataLs = ret;
 
@@ -162,11 +279,27 @@
         },
 
         methods: {
+
+            spanMethodCallback({row: r, column: c, rowIndex, columnIndex}) {
+                const m = this;
+                const {__rowspanCache: cache} = m;
+
+                debugger;
+                for (let i = 0; i < cache.length; i++) {
+                    let cb = cache[i];
+                    let {key, index, column, data} = cb;
+                    if (c.key == cb.key) {
+                        return [data[rowIndex], 1];
+                    }
+                }
+            },
+
+
             update_selectRow(row) {
                 const m = this;
 
                 //避免无效改版
-                if (_.get(row, m.mainKey) != _.get(m.selectRow, m.mainKey)) {
+                if (_get(row, m.mainKey) != _get(m.selectRow, m.mainKey)) {
                     m.$emit("update:selectRow", row);
                 }
             }
