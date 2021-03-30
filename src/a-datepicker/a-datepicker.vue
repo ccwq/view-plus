@@ -1,5 +1,5 @@
 <template lang="pug">
-    .a-datepicker-comp
+    span.a-datepicker-comp
         DatePicker(
             :value="avalue"
             @input="handlerInput"
