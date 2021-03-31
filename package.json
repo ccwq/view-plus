@@ -16,8 +16,10 @@
     },
     "dependencies": {
         "ipro": "^1.0.54",
+        "jquery": "^3.6.0",
         "lodash": "^4.17.15",
-        "tree-crawl": "^1.0.5"
+        "tree-crawl": "^1.0.5",
+        "vue-iplus": "^2.0.25"
     },
     "devDependencies": {
         "@babel/core": "^7.9.0",

@@ -2162,6 +2162,13 @@ brorand@^1.0.1:
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
   integrity sha1-EsJe/kCkXjwyPrhnWgoM5XsiNx8=
 
+browser-image-size@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/browser-image-size/-/browser-image-size-1.1.0.tgz#476914a871749f05f66b023b21dd2ed4318ffbb7"
+  integrity sha1-R2kUqHF0nwX2awI7Id0u1DGP+7c=
+  dependencies:
+    object-url "^1.0.0"
+
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/browserify-aes/-/browserify-aes-1.2.0.tgz#326734642f403dabc3003209853bb70ad428ef48"
@@ -4792,7 +4799,7 @@ ipaddr.js@1.9.1, ipaddr.js@^1.9.0:
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
   integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
 
-ipro@^1.0.54:
+ipro@^1.0.35, ipro@^1.0.54:
   version "1.0.54"
   resolved "https://registry.yarnpkg.com/ipro/-/ipro-1.0.54.tgz#3757d5e0452b024ffd2d1e443ee764ca0c61f5f0"
   integrity sha512-oPZ4+lGBQozlPLw6ifuyKgJuW0F+AVXTQhy+5mc5FIygsuz6NhwC4kPlpkEJIYuBHp4EypyeSvbdXjQ7Zz1FfA==
@@ -5170,6 +5177,11 @@ jest-worker@^25.4.0:
     merge-stream "^2.0.0"
     supports-color "^7.0.0"
 
+jquery@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
+  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
+
 js-base64@^2.1.9:
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.6.4.tgz#f4e686c5de1ea1f867dbcad3d46d969428df98c4"
@@ -5459,6 +5471,11 @@ lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.3, lodash@^4.17.4:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+
+lodash@^4.17.20:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 log-symbols@^2.2.0:
   version "2.2.0"
@@ -6125,6 +6142,11 @@ object-keys@^1.0.11, object-keys@^1.0.12, object-keys@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
+
+object-url@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/object-url/-/object-url-1.0.0.tgz#248e5549f4726c33791469e2dcf49050f9d0f124"
+  integrity sha1-JI5VSfRybDN5FGni3PSQUPnQ8SQ=
 
 object-visit@^1.0.0:
   version "1.0.1"
@@ -8823,6 +8845,15 @@ vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
+
+vue-iplus@^2.0.25:
+  version "2.0.25"
+  resolved "https://registry.yarnpkg.com/vue-iplus/-/vue-iplus-2.0.25.tgz#5ecda189423cd27f469971ca61f22aaa05b575f9"
+  integrity sha512-9tNPvWv9s/1lYyM4NY3m4uwqrrUwqf+YQqxCm4sulLvtM/mbJVPUERXH7U8xTKmzZ5NQcasZhajputCMmLxUPw==
+  dependencies:
+    browser-image-size "^1.1.0"
+    ipro "^1.0.35"
+    lodash "^4.17.20"
 
 "vue-loader-v16@npm:vue-loader@^16.0.0-beta.7":
   version "16.0.0-rc.2"
