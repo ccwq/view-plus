@@ -14,7 +14,7 @@
             v-if="attrs"
             v-bind="attrs"
             @input="handlerChange"
-            @click.native.stop
+            @click.native.stop="__=>_"
         )
             span.__label(slot="open")   {{onLabel}}
             span.__label(slot="close")  {{offLabel}}
