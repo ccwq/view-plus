@@ -5,6 +5,7 @@
         ref="modal"
         :class="{'protect-content':protectContent, disabled}"
     )
+        slot(name="header" slot="header")
         slot
         template( slot="footer" )
             slot(
