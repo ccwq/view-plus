@@ -131,7 +131,6 @@ const {
 } = Utils;
 import {all2valueName as parseOptions} from "ipro/src/baseUtil";
 
-
 /**
  * 文本宽度计算
  * @type {function(*, *=): number}
@@ -505,7 +504,7 @@ export default {
                 }else if(!oldValue){
                     _value = tmp.format("%s");
                 }else if (typeof oldValue == "string") {
-                    let leng = _value.trim().split(/[\s\:\-]/);
+                    let leng = oldValue.trim().split(/[\s\:\-]/);
                     if (leng == 2) {
                         formater = "Y-m";
                     }else if (leng == 3) {
