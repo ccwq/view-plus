@@ -1,6 +1,6 @@
 {
     "name": "view-plus",
-    "version": "2.1.21",
+    "version": "2.1.22",
     "main": "dist/index.js",
     "license": "MIT",
     "scripts": {
