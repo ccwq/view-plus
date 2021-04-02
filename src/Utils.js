@@ -1,3 +1,6 @@
+import {all2date} from "ipro/src/date/DateUtils";
+import {columnDef} from "./index";
+
 export {all2date} from "ipro/src/date/DateUtils";
 export {columnDef} from "./index";
 
