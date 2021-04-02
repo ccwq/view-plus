@@ -224,28 +224,28 @@ export default {
                     ret = data.map((el) => ({...el}));
                 }
 
+                if (m.__rowspanCache) {
+                    m.__rowspanCache.forEach(cb => {
+                        const {key, index, column} = cb;
+                        let _data = Array(data.length).fill(0);
+                        data.reduce((ret, row, _index) => {
+                            let value = row[key];
 
-                m.__rowspanCache.forEach(cb => {
-                    const {key, index, column} = cb;
-                    let _data = Array(data.length).fill(0);
-                    data.reduce((ret, row, _index) => {
-                        let value = row[key];
+                            if (ret.value == value) {
+                                ret.count++;
+                                _data[ret.point] = ret.count;
+                            } else {
+                                ret.count = 1;
+                                ret.point = _index;
+                                _data[_index] = 1;
+                            }
 
-                        if (ret.value == value) {
-                            ret.count++;
-                            _data[ret.point] = ret.count;
-                        } else {
-                            ret.count = 1;
-                            ret.point = _index;
-                            _data[_index] = 1;
-                        }
-
-                        ret.value = value;
-                        return ret;
-                    }, {count: 1, value: "", point: 0});
-                    cb.data = _data;
-                });
-
+                            ret.value = value;
+                            return ret;
+                        }, {count: 1, value: "", point: 0});
+                        cb.data = _data;
+                    });
+                }
 
                 m.dataLs = ret;
 
