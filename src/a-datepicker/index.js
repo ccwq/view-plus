@@ -1,1 +1,3 @@
-export aDatepicker from "./a-date-range.vue";
+import aDatepicker from "./a-datepicker.vue";
+
+export default aDatepicker;
