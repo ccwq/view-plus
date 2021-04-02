@@ -1,2 +1,2 @@
-import aRow from "./a-row"
+import aRow from "./a-row.vue"
 export default aRow;
