@@ -7,7 +7,7 @@
             v-if="checkbox"
             v-bind="attrs"
             @input="handlerChange($event, true)"
-            @click.native.stop
+            @click.native.stop="__=>_"
         )
         template(v-else): i-switch(
             ref="switcher"
