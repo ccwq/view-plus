@@ -250,7 +250,8 @@ export default {
                 m.dataLs = ret;
 
                 //第一次默认选择相关
-                let defSelRow = data?.[m.defaultSelectedIndex];
+                let defSelRow = _get(data, m.defaultSelectedIndex);
+
                 //当前没有选择状态//并且默认选择有值
                 if (!m.selectRow && defSelRow) {
                     m.update_selectRow(defSelRow);
