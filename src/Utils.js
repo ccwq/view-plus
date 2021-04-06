@@ -4,6 +4,8 @@ import {columnDef} from "./index";
 export {all2date} from "ipro/src/date/DateUtils";
 export {columnDef} from "./index";
 
+import isPlainObject from "lodash/isPlainObject"
+
 export default class  {
     /**
      * 定义表格列, #开头的字符串表示slot
@@ -136,14 +138,7 @@ export default class  {
      * @returns {boolean}
      */
     static isPlainObject(obj) {
-        if (typeof obj !== 'object' || obj === null) return false
-
-        let proto = obj
-        while (Object.getPrototypeOf(proto) !== null) {
-            proto = Object.getPrototypeOf(proto)
-        }
-
-        return Object.getPrototypeOf(obj) === proto
+        return isPlainObject(obj);
     }
 
 
