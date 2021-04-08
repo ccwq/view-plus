@@ -4,9 +4,90 @@ import {columnDef} from "./index";
 export {all2date} from "ipro/src/date/DateUtils";
 export {columnDef} from "./index";
 
-import isPlainObject from "lodash/isPlainObject"
+import isPlainObject from "lodash/isPlainObject";
 
-export default class  {
+const text2formItems = function(
+    formConfigText,
+    {
+        commSett=_=>_,
+        eachSett={}
+    }
+){
+
+    if (!formConfigText && !typeof formConfigText=="string") {
+        throw "请使用有效的配置"
+    }
+
+
+    //设置是函数的形式
+    if(typeof eachSett == "function"){
+        eachSett = eachSett() || {};
+    }
+
+    //trim并且删除最后多余的逗号
+    formConfigText = formConfigText.trim().replace(/,$/, "");
+    return formConfigText
+        .split("\n")
+        .map(el => el.trim())
+        .filter(el => (el && !el.startsWith("//")))
+        .map(el => el.trim().split(/\s+/))
+        .reduce((ret, [prop, type = "", label = "", value = ""]) => {
+            let [_type, ...itemClass] = type.split(".");
+            type = _type;
+
+            let [_prop, ...formItemClass] = prop.split(".");
+            prop = _prop;
+
+            if (type == "number") {
+                value = parseFloat(value);
+            } else if (/^bool/.test(type)) {
+                // value = value !== "false";
+            } else if (type == "date") {
+                value = m.parseDate(value);
+            }
+
+            let item = {prop, label, type, value, itemClass, formItemClass};
+
+            //如果值为单个"-"表示该项不设置
+            Object.keys(item).forEach(key => {
+                if (item[key] == "-") {
+                    delete item[key]
+                }
+            })
+
+            if (commSett) {
+                item = {
+                    ...commSett(item),
+                    ...item
+                };
+            }
+
+            let _eachSett = eachSett[prop];
+
+            if (typeof _eachSett == "function") {
+                item = _eachSett(item) || item;
+            } else if (_eachSett) {
+                item = Object.assign(item, _eachSett);
+            }
+
+
+            //下拉选项类型处理
+            if (Array.isArray(item.options)) {
+                item.options = item.options.map(el => {
+                    if (Array.isArray(el)) {
+                        let [value, name] = el;
+                        return {value, name}
+                    }
+                    return el;
+                })
+            }
+            ret.push(item);
+            return ret;
+        }, [])
+        ;
+}
+
+export default class {
     /**
      * 定义表格列, #开头的字符串表示slot
      * 举例1 tableColumnDef("id", "编号", 50, "center", function(){})
@@ -45,81 +126,8 @@ export default class  {
      * @param eachSett 附加字段，以prop为key
      * @param commSett 附加字段，为所有增加同样的配置
      */
-    static text2formItems(formConfigText, {commSett=_=>_, eachSett={}}){
-        const m = this;
-
-
-        if (!formConfigText && !typeof formConfigText=="string") {
-            throw "请使用有效的配置"
-        }
-
-
-        //设置是函数的形式
-        if(typeof eachSett == "function"){
-            eachSett = eachSett() || {};
-        }
-
-        //trim并且删除最后多余的逗号
-        formConfigText = formConfigText.trim().replace(/,$/, "");
-        return formConfigText
-            .split("\n")
-            .map(el => el.trim())
-            .filter(el => (el && !el.startsWith("//")))
-            .map(el => el.trim().split(/\s+/))
-            .reduce((ret, [prop, type = "", label = "", value = ""]) => {
-                let [_type, ...itemClass] = type.split(".");
-                type = _type;
-
-                let [_prop, ...formItemClass] = prop.split(".");
-                prop = _prop;
-
-                if (type == "number") {
-                    value = parseFloat(value);
-                } else if (/^bool/.test(type)) {
-                    // value = value !== "false";
-                } else if (type == "date") {
-                    value = m.parseDate(value);
-                }
-
-                let item = {prop, label, type, value, itemClass, formItemClass};
-
-                //如果值为单个"-"表示该项不设置
-                Object.keys(item).forEach(key => {
-                    if (item[key] == "-") {
-                        delete item[key]
-                    }
-                })
-
-                if (commSett) {
-                    item = {
-                        ...commSett(item),
-                        ...item
-                    };
-                }
-
-                let _eachSett = eachSett[prop];
-
-                if (typeof _eachSett == "function") {
-                    item = _eachSett(item) || item;
-                } else if (_eachSett) {
-                    item = Object.assign(item, _eachSett);
-                }
-
-
-                //下拉选项类型处理
-                if (Array.isArray(item.options)) {
-                    item.options = item.options.map(el => {
-                        if (Array.isArray(el)) {
-                            let [value, name] = el;
-                            return {value, name}
-                        }
-                        return el;
-                    })
-                }
-                ret.push(item);
-                return ret;
-            }, [])
-            ;
+    static text2formItems(...rest){
+        return text2formItems(...rest);
     }
 
 
@@ -140,8 +148,6 @@ export default class  {
     static isPlainObject(obj) {
         return isPlainObject(obj);
     }
-
-
 }
 
 

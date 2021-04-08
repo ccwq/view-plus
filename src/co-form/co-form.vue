@@ -124,11 +124,9 @@
 </template>
 <script>
 import Utils from "../Utils";
-import get from "lodash/get"
-const {
-    isPlainObject,
-    parseDate,
-} = Utils;
+import get from "lodash/get";
+import isPlainObject from "lodash/isPlainObject";
+import {all2date as parseDate} from "ipro/src/date"
 import {all2valueName as parseOptions} from "ipro/src/baseUtil";
 
 /**
