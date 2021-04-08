@@ -4,6 +4,8 @@ import {columnDef} from "./index";
 export {all2date} from "ipro/src/date/DateUtils";
 export {columnDef} from "./index";
 
+
+
 import isPlainObject from "lodash/isPlainObject";
 
 const text2formItems = function(
@@ -43,7 +45,7 @@ const text2formItems = function(
             } else if (/^bool/.test(type)) {
                 // value = value !== "false";
             } else if (type == "date") {
-                value = m.parseDate(value);
+                value = all2date(value);
             }
 
             let item = {prop, label, type, value, itemClass, formItemClass};
@@ -118,9 +120,9 @@ export default class {
     /**
      * 允许使用如下语法进行表单创建
      `
-         name            text        名称,
-         pid             select      项目
-         facilityType    select      设备类型
+     name            text        名称,
+     pid             select      项目
+     facilityType    select      设备类型
      `
      * @param formConfigText
      * @param eachSett 附加字段，以prop为key
