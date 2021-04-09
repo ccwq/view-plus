@@ -159,7 +159,7 @@ export default {
         },
 
         slotColumns() {
-            return (this.$attrs.columns || []).filter(el => el.slot);
+            return (this.columns || []).filter(el => el.slot);
         }
     },
 
