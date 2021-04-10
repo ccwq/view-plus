@@ -1,18 +1,9 @@
 <template lang="pug">
-    Select.a-select-comp(
-        :value="val"
-        transfer
-        @input="inputHandler"
-        :disabled="disabled"
-        v-if="!radioMode"
-        v-bind="attrs"
-    )
-        Option(
-            v-for="el, index in ls"
-            :key="index"
-            :value="el.value + ''"
-        ) {{el.name}}
-    .dd-select-comp.flex(v-else)
+
+    //
+    .text(v-if="textMode") {{displayValue}}
+
+    .dd-select-comp.flex(v-else-if="radioMode")
         template( v-for="el, index in ls" )
             Radio(
                 v-if="!el.slot"
@@ -24,6 +15,22 @@
                 :selected="el.value == val"
                 :handler="selected=>selected?inputHandler(el,value):(_=>_)"
             )
+
+    Select.a-select-comp(
+        :value="val"
+        transfer
+        @input="inputHandler"
+        :disabled="disabled"
+        v-else
+        v-bind="attrs"
+    )
+        Option(
+            v-for="el, index in ls"
+            :key="index"
+            :value="el.value + ''"
+        ) {{el.name}}
+
+
 
 </template>
 <script>
@@ -67,6 +74,19 @@ export default {
         //使用radio模式
         radioMode: {
             default:false,
+            type:Boolean
+        },
+
+
+        //文本模式，用来回显
+        textMode:{
+            default:false,
+            type:Boolean
+        },
+
+        //文本模式下，如果value匹配不到option，显示该值
+        textModePlactholder:{
+            default:"",
         },
 
         value:{
@@ -156,6 +176,24 @@ export default {
 
         optionsList(){
             return this.optionLs || this.options || this.optionsLs;
+        },
+
+
+        displayValue(){
+            const m = this;
+            const {ls, value, textModePlactholder} = m;
+
+            if (!ls) {
+                return "";
+            }
+
+            let ret = ls.find(el => el.value == value);
+
+            if (!ret) {
+                return textModePlactholder;
+            }
+
+            return ret.name ;
         },
     },
 
