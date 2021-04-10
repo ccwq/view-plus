@@ -333,6 +333,7 @@ export default {
                 m.items_clone.forEach(item=>{
                     const {prop, type, attrs} = item;
                     let key = prop;
+
                     //多字段表单项
                     if (item.originProp) {
                         key = item.key;
@@ -343,13 +344,23 @@ export default {
                             return v;
                         }, {});
                     }else{
+
+                        //原先的数据
                         const oval = model[key];
 
                         //是数字或者bool的时候，oval等于0
                         if (oval==="" && (type.startsWith("bool") || type == "number" || type == "select")) {
-                            setFormKeyValue(form, item, model[key]);
+                            form[prop] = getDefaultValueByFormItemOption(item);
+
+                        //日期格式，并且没有设置有效值
+                        }else if(!oval && type == "date"){
+                            form[prop] = getDefaultValueByFormItemOption(item);
+
+                        //值未设置
                         }else if(typeof oval == "undefined"){
-                            setFormKeyValue(form, item, model[key]);
+                            form[prop] = getDefaultValueByFormItemOption(item);
+
+                        //设置当前值
                         }else{
                             form[prop] = model[prop];
                         }
@@ -358,11 +369,6 @@ export default {
                 })
 
                 m.setForm(form);
-
-                function setFormKeyValue(form, item, value){
-                    const {attrs, prop} = item;
-                    form[item.prop] = getDefaultValueByFormItemOption(item);;
-                }
             }
         },
 
@@ -741,11 +747,11 @@ function getDefaultValueByFormItemOption(item){
     const {type, props, attrs, prop, options} = item;
     const {trueValue, falseValue, max, min} = attrs || {};
 
-    if (/^bool/.test(item.type)) {
+    if (/^bool/.test(type)) {
         if (value != trueValue) {
             value = falseValue;
         }
-    }else if (item.type == "number") {
+    }else if (type == "number") {
         if (typeof value != "number") {
             value = 0;
         }
@@ -758,7 +764,7 @@ function getDefaultValueByFormItemOption(item){
                 value = min;
             }
         }
-    }else if(item.type=="select"){
+    }else if(type=="select"){
         let _options = parseOptions(options);
         if (_options.then) {
             console.warn("options为promise无法设置默认值");
@@ -772,8 +778,10 @@ function getDefaultValueByFormItemOption(item){
                 }
             }
         }
-    }else{
-        // value = "";
+
+    //日期类型
+    }else if(type == "date"){
+        value = new Date;
     }
     return value;
 }
