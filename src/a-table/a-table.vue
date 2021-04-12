@@ -159,7 +159,7 @@ export default {
         },
 
         slotColumns() {
-            return (this.columns || []).filter(el => el.slot);
+            return (this.tColumns || []).filter(el => el.slot);
         }
     },
 
