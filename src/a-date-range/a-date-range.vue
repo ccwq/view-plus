@@ -20,7 +20,7 @@
     //- 时间条
     //- 正式内容
     .date-filter-bar-comp.flex
-        slot(name="label"): b.pr05 统计时间范围:
+        slot(name="label"): b.pr05 {{title}}
 
         //时间模式
         template(v-if="modeLsFront")
@@ -177,11 +177,10 @@ export default {
         },
 
         /**
-         * 隐藏标签
+         * biaoti
          */
-        hideLabel: {
-            type: Boolean,
-            default: false
+        title: {
+            default: ""
         },
 
         /**
