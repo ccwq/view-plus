@@ -22,28 +22,40 @@ export default {
  * @param rest 传入数字为宽度/函数为render/#开头字符串为slot
  */
 export const columnDef = function(key, title, ...rest){
-    const m = this;
-    let align, width, render, others, slot;
+    const col = {key, title}
     rest.forEach(el=>{
         if (isPlainObject(el)) {
-            others = el;
+            Object.assign(col, others)
         }else if (typeof el == "string") {
+
+            //解析render
             if (el.startsWith("#")) {
-                slot = el.substr(1);
+                col.slot = el.substr(1);
+
+                //解析fixed
+            }else if(["?left", "?right", "?center"].includes(el)) {
+                col.fixed = el.substr(1);
+
+                //解析tooltip
+            }else if(el=="?tooltip"){
+                col.tooltip = true;
+
+                //解析align
+            }else if(["left", "right", "center"].includes(el)) {
+                col.align = el;
+
+                //解析class
+            }else if(el.startsWith(".")){
+                col.className = el.substr(1);
             }else{
-                align = el;
+                console.log("未识别的配置");
             }
         }else if (typeof el == "number") {
-            width = el;
+            col.width = el;
         }else if (typeof el == "function") {
-            render = el;
+            col.render = el;
         }
     })
-
-    let col = {key, title, align, width, render, ...others};
-    if (slot) {
-        col.slot = slot;
-    }
     return col;
 }
 

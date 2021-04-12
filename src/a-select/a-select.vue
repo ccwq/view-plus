@@ -1,18 +1,9 @@
 <template lang="pug">
-    Select.a-select-comp(
-        :value="val"
-        transfer
-        @input="inputHandler"
-        :disabled="disabled"
-        v-if="!radioMode"
-        v-bind="attrs"
-    )
-        Option(
-            v-for="el, index in ls"
-            :key="index"
-            :value="el.value + ''"
-        ) {{el.name}}
-    .dd-select-comp.flex(v-else)
+
+    //
+    .text(v-if="textMode") {{displayValue}}
+
+    .dd-select-comp.flex(v-else-if="radioMode")
         template( v-for="el, index in ls" )
             Radio(
                 v-if="!el.slot"
@@ -24,6 +15,22 @@
                 :selected="el.value == val"
                 :handler="selected=>selected?inputHandler(el,value):(_=>_)"
             )
+
+    Select.a-select-comp(
+        :value="val"
+        transfer
+        @input="inputHandler"
+        :disabled="disabled"
+        v-else
+        v-bind="attrs"
+    )
+        Option(
+            v-for="el, index in ls"
+            :key="index"
+            :value="el.value + ''"
+        ) {{el.name}}
+
+
 
 </template>
 <script>
@@ -67,6 +74,19 @@ export default {
         //使用radio模式
         radioMode: {
             default:false,
+            type:Boolean
+        },
+
+
+        //文本模式，用来回显
+        textMode:{
+            default:false,
+            type:Boolean
+        },
+
+        //文本模式下，如果value匹配不到option，显示该值
+        textModePlactholder:{
+            default:"",
         },
 
         value:{
@@ -157,6 +177,24 @@ export default {
         optionsList(){
             return this.optionLs || this.options || this.optionsLs;
         },
+
+
+        displayValue(){
+            const m = this;
+            const {ls, value, textModePlactholder} = m;
+
+            if (!ls) {
+                return "";
+            }
+
+            let ret = ls.find(el => el.value == value);
+
+            if (!ret) {
+                return textModePlactholder;
+            }
+
+            return ret.name ;
+        },
     },
 
     watch:{
@@ -176,73 +214,72 @@ export default {
                 );
 
                 m.ls = _ls;
+
+                m.setValue(m.value, true);
             }
         },
-        ls:{
-            handler(ls) {
-                const m = this;
 
-                //寻找当前值的选项
-                let valueOption = ls.find(el => el.value == m.val);
-
-                //没有找到当前值对应的选项
-                if (!valueOption) {
-                    if (m.backupValue) {
-
-                        valueOption = ls.find(el => m.value == m.backupValue);
-                        if (valueOption) {
-                            m.val = m.backupValue;
-
-                            //派发值修改事件
-                            if (m.backupValueEmitValue) {
-                                m.$emit("input", m.backupValue);
-                            }
-                        }else{
-                            m.val = ls[0].value;
-                        }
-                    }
-                }
-            }
-        },
 
         value:{
             immediate: true,
             handler(){
                 const m = this;
-
-                let value = m.value;
-
-                m.__valueType == typeof value;
-
-                if (typeof value != Number || typeof value != Number) {
-                    value = value + "";
-                }
-
-                //如果value是空，就使用空替代来设置内部value
-                if (value===undefined || value===null && m.blankValueReplacer) {
-                    value = m.blankValueReplacer;
-                }
-
-                let valueOption = m.ls.find(el => el.value === value);
-                if (!valueOption) {
-
-                    //对后选值的处理
-                    if (m.backupValue) {
-                        m.val = m.backupValue;
-                        if (m.backupValueEmitValue) {
-                            m.$emit("input", m.backupValue);
-                        }
-                    }else{
-                        m.val = value;
-                    }
-                }else{
-                    m.val = value;
-                }
+                m.setValue(m.value)
             }
         },
     },
 
     methods: {
+        setValue(value, formLsChange){
+            const m = this;
+            const {ls} = m;
+
+            //记录值的类型
+            m.__valueType == typeof value;
+            value = value + "";
+
+            //寻找当前值的选项
+            let valueOption = ls.find(el => el.value == value);
+
+            //没有找到当前值对应的选项
+            if (!valueOption) {
+
+                //设置备选值
+                if (m.backupValue) {
+
+                    //备选值的option
+                    valueOption = ls.find(el => m.value == m.backupValue);
+
+                    //备选值存在option
+                    if (valueOption) {
+                        m.val = m.backupValue;
+
+                        //派发备选值
+                        if (m.backupValueEmitValue && !formLsChange) {
+                            m.$emit("input", m.backupValue);
+                        }
+
+                    //备选值不存在option
+                    }else{
+                        m.val = ls[0].value;
+                    }
+                }
+
+                //空值option获取
+                valueOption = ls.find(el => el.value == m.blankValueReplacer);
+
+                if (
+                    value===undefined ||
+                    value===null ||
+                    value === "" &&
+                    valueOption
+                ) {
+                    m.val = m.blankValueReplacer;
+                }
+            }else{
+                m.val = value;
+            }
+        },
 
         inputHandler(value) {
             const m = this;
@@ -252,7 +289,6 @@ export default {
                 return;
             }
 
-            m.val = value;
             if (value !== void 0) {
 
                 let _value = value;
@@ -271,6 +307,7 @@ export default {
                 }
 
                 m.$emit("input", _value);
+                m.val = value;
             }
         }
     },
