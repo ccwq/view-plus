@@ -51,7 +51,19 @@ export const columnDef = function(key, title, ...rest){
                 console.log("未识别的配置");
             }
         }else if (typeof el == "number") {
-            col.width = el;
+
+            //小于0的部分表示最小宽度
+            if (el < 0) {
+                col.minWidth = -el;
+
+            //大于10000的部分表示最大宽
+            }else if (el > 10000) {
+                col.maxWdith = el - 10000;
+
+            //直接设置宽度
+            }else{
+                col.width = el;
+            }
         }else if (typeof el == "function") {
             col.render = el;
         }
