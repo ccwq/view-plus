@@ -25,7 +25,7 @@ export const columnDef = function(key, title, ...rest){
     const col = {key, title}
     rest.forEach(el=>{
         if (isPlainObject(el)) {
-            Object.assign(col, others)
+            Object.assign(col, el)
         }else if (typeof el == "string") {
 
             //解析render
