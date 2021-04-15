@@ -8,7 +8,7 @@ export {columnDef} from "./index";
 
 import isPlainObject from "lodash/isPlainObject";
 
-const text2formItems = function(
+export const text2formItems = function(
     formConfigText,
     {
         commSett=_=>_,

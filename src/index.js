@@ -1,6 +1,8 @@
 import aTable from "./a-table";
 import coFrom from "./co-form"
 import isPlainObject from "lodash/isPlainObject"
+export {text2formItems} from "./Utils";
+
 
 export default {
     install(Vue, options = {}) {
