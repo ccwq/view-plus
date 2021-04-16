@@ -1,5 +1,5 @@
 <template lang="pug">
-    .a-switch-comp(:class="{sleep:sleeping}" @click="handlerClick")
+    .a-switch-comp(:class="{sleep:sleeping, disabled}" @click="handlerClick")
         slot(name="start" :title="title")
             span.pr05(v-if="title"): b(v-text="title")
         Checkbox(
@@ -7,20 +7,22 @@
             v-if="checkbox"
             v-bind="attrs"
             @input="handlerChange($event, true)"
-            @click.native.stop="__=>_"
+            @click.native.stop="noop"
         )
         template(v-else): i-switch(
             ref="switcher"
             v-if="attrs"
             v-bind="attrs"
             @input="handlerChange"
-            @click.native.stop="__=>_"
+            @click.native.stop="noop"
         )
             span.__label(slot="open")   {{onLabel}}
             span.__label(slot="close")  {{offLabel}}
         slot(name="end" :title="title")
 </template>
 <script>
+
+const noop = _=>_;
 
 const labelValueParser = function(origin){
     if (!origin) {
@@ -52,6 +54,11 @@ export default {
     },
 
     props: {
+
+        disabled:{
+            type:Boolean,
+            default:false,
+        },
 
         checkbox:{
             type:Boolean,
@@ -104,7 +111,7 @@ export default {
     computed:{
         sleeping(){
             const m = this;
-            const {sleepWhenOn, sleepWhenOff, sleep, on, off} = m;
+            const {sleepWhenOn, sleepWhenOff, sleep, disabled, on, off} = m;
 
             if (sleepWhenOn) {
                 return on;
@@ -114,7 +121,7 @@ export default {
                 return off;
             }
 
-            return sleep;
+            return sleep || disabled;
         },
 
         valueLs(){
@@ -165,7 +172,7 @@ export default {
         },
     },
     methods: {
-
+        noop,
         /**
          * 状态改变进入,
          * @param value 改变的值switch模式为true false,checkbox模式为trueValue, falseValue
@@ -235,6 +242,11 @@ export default {
         .ivu-switch{
 
         }
+    }
+
+
+    &.disabled{
+        opacity: 0.4;
     }
 
     .ivu-switch{
