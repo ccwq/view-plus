@@ -58,6 +58,7 @@
                         v-bind="item.attrs"
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
+                        :size="itemSize"
                     )
                 template(v-if="/^(date)$/.test(item.type)")
                     DatePicker(
@@ -68,6 +69,7 @@
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
                         :readonly="readonly"
+                        :size="itemSize"
                     )
                 template(v-if="/^(number|int)$/.test(item.type)")
                     InputNumber(
@@ -78,6 +80,7 @@
                         :placeholder="item.placeholder"
                         :class="item.itemClass"
                         @keydown.native.13="handlerEnter($event, item, index)"
+                        :size="itemSize"
                     )
 
                 template(v-else-if="item.type==='select'")
@@ -87,6 +90,7 @@
                         v-bind="item.attrs"
                         transfer
                         :class="item.itemClass"
+                        :size="itemSize"
                     )
                         Option(
                             v-for="opt,index in item.options"
@@ -109,6 +113,7 @@
                         :value='val==attrs.trueValue?val:attrs.falseValue'
                         @input="formChangeHandler(item, $event)"
                         :class="item.itemClass"
+                        :size="itemSize"
                     ): span {{booleanCheckLabelTransf(item, form[item.prop])}}
 
                 template(v-else)
@@ -120,6 +125,7 @@
                         :form="form"
                         :all-items="items_clone"
                         :formChangeHandler="formChangeHandler.bind(null, item)"
+                        :size="itemSize"
                     )
 </template>
 <script>
@@ -185,6 +191,9 @@ export default {
         }
     },
     props: {
+        itemSize:{
+            default:"default",
+        },
 
         //宽度修正
         labelWidthOffset:{
