@@ -580,13 +580,19 @@ export default {
         /**
          * 重置
          */
-        resetForm(){
-            this.resetValues();
-            this.$refs.form.resetFields();
+        resetForm(delay=12, callback){
+            return new Promise((resolve, reject) => {
+                setTimeout(__ => {
+                    this.resetValues();
+                    this.$refs.form.resetFields();
+                    callback && callback();
+                    resolve();
+                }, delay);
+            })
         },
 
         reset() {
-            this.resetForm();
+            return this.resetForm();
         },
 
         //重置为默认值
