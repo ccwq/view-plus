@@ -690,7 +690,7 @@ function transformValidator(validators){
 
     return validators.map(validator => {
         //数组元素是函数，需要单独封装
-        if (typeof vdr == "function") {
+        if (typeof validator == "function") {
             return {validator}
         } else if (isPlainObject(validator)) {
             let {injectType, validator: va} = validator;
