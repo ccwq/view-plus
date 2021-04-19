@@ -84,19 +84,16 @@
                     )
 
                 template(v-else-if="item.type==='select'")
-                    Select(
+                    a-select(
                         :value="form[item.prop]"
                         @input="formChangeHandler(item, $event)"
                         v-bind="item.attrs"
                         transfer
                         :class="item.itemClass"
                         :size="itemSize"
+                        :options="item.options"
                     )
-                        Option(
-                            v-for="opt,index in item.options"
-                            :key="index"
-                            :value="opt.value"
-                        )   {{opt.name || opt.label || opt.title}}
+
 
                 //布尔
                 x-define(
@@ -580,12 +577,11 @@ export default {
         /**
          * 重置
          */
-        resetForm(delay=12, callback){
+        resetForm(delay=12){
             return new Promise((resolve, reject) => {
                 setTimeout(__ => {
                     this.resetValues();
                     this.$refs.form.resetFields();
-                    callback && callback();
                     resolve();
                 }, delay);
             })
