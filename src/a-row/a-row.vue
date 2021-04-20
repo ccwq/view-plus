@@ -11,10 +11,9 @@
 </template>
 <script>
 import $ from "jquery"
-import debounceMixin from "vue-iplus/src/mixin/debounce-method"
+import debounce from "lodash/debounce"
 export default {
     name: "a-row",
-    mixins:[debounceMixin],
     props: {
         "label":String,
         "end":String,
@@ -27,7 +26,22 @@ export default {
     debounce: {
         calcWidth_60(){
             const m = this;
-            let $el = $(m.$el);
+
+        },
+        handlerResize() {
+            const m = this;
+
+        }
+    },
+
+    mounted(){
+        const m = this;
+        const $$parent = $(m.$el).parent();
+        const ekey = ".ev-" + m._uid;
+
+        let $el = $(m.$el);
+
+        const calcWidth = debounce(__ => {
             $el.addClass("_anchor");
             if ($el.nextAll("._anchor").length) {
                 return;
@@ -52,28 +66,26 @@ export default {
             $sibLs.find(">b").css({
                 width: maxLeng + "em"
             });
-        },
-        handlerResize() {
-            const m = this;
+        }, 200);
 
-        }
-    },
+        m.$watch("autoWidth", {
+            immediate:true,
+            handler(autoWidth) {
+                m.$el.parentElement.classList.add("a-row-content");
+                if (autoWidth) {
+                    setTimeout(calcWidth);
+                    $$parent.on("a-row-resize" + ekey, function () {
+                        calcWidth();
+                    });
+                }else{
+                    $$parent.trigger("a-row-resize");
+                }
+            }
+        })
+        m.__destroy.then(resp=>{
+            $$parent.off(ekey);
+        })
 
-    mounted(){
-        const m = this;
-        const $$parent = $(m.$el).parent();
-        m.$el.parentElement.classList.add("a-row-content");
-        if (m.autoWidth) {
-            setTimeout(m.calcWidth);
-            $$parent.on("a-row-resize.a-row-resize-event", function () {
-                m.calcWidth();
-            });
-            m.__destroy.then(resp=>{
-                $$parent.off(".a-row-resize-event");
-            })
-        }else{
-            $$parent.trigger("a-row-resize");
-        }
     }
 }
 </script>
