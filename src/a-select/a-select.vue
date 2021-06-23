@@ -18,9 +18,9 @@
 
     Select.a-select-comp(
         :value="val"
-        transfer
         @input="inputHandler"
         :disabled="disabled"
+        :transfer="transfer"
         v-else
         v-bind="attrs"
     )
@@ -81,6 +81,11 @@ export default {
         //文本模式，用来回显
         textMode:{
             default:false,
+            type:Boolean
+        },
+
+        transfer:{
+            default:true,
             type:Boolean
         },
 
