@@ -4809,12 +4809,11 @@ ipro@^1.0.35:
     lodash "^4.17.15"
     tree-crawl "^1.1.0"
 
-ipro@^1.0.56:
-  version "1.0.56"
-  resolved "https://registry.yarnpkg.com/ipro/-/ipro-1.0.56.tgz#ef621c6f3de53de4bc6085fc8d300d2e343e8286"
-  integrity sha512-6slOrI3+bESKKBS4TQo6WFHIe0raYEKzIy5T7/aHB+dqS3aZsyV5/q1N8zZi5NcsKKk0u5MgXoDL43TPjq1CEg==
+ipro@^1.0.61:
+  version "1.0.61"
+  resolved "https://registry.yarnpkg.com/ipro/-/ipro-1.0.61.tgz#a3fa3ce2f0faa79070db06ff720ee7e06e4a4f5b"
+  integrity sha512-jpA6g9Zpd36YkjCgZMWIwLe5xfSgi7Z8gF7V8fPiC8r8kN1Zehi4BSoM4vxao4X/Pr+AeLnNlh7Y58PvSoe1YQ==
   dependencies:
-    date-prototype "^1.0.0"
     fast-gbk "^0.0.1"
     lodash "^4.17.15"
     tree-crawl "^1.1.0"
