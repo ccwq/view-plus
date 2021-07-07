@@ -15,11 +15,11 @@
         "build:all": "cross-env NODE_ENV=production  node build"
     },
     "dependencies": {
-        "ipro": "^1.0.61",
+        "ipro": "^1.0.65",
         "jquery": "^3.6.0",
         "lodash": "^4.17.15",
         "tree-crawl": "^1.0.5",
-        "vue-iplus": "^2.0.29"
+        "vue-iplus": "^2.0.35"
     },
     "devDependencies": {
         "@babel/core": "^7.9.0",
