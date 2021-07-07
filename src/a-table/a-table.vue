@@ -29,6 +29,30 @@ import _isEqual from "lodash/isEqual";
 import _get from "lodash/get";
 import {columnDef} from "../index";
 
+
+/**
+ *
+ * @param colDefineLs
+ * @param prevRow
+ * @param row
+ * @param currentDef
+ * @param simpleMerge
+ * @returns {boolean|*}
+ */
+const judgeCellMergeHelper1 = function(colDefineLs, prevRow, row, currentDef, simpleMerge=true){
+    const {key, index, column} = currentDef;
+    if (simpleMerge) {
+        return prevRow[key] == row[key];
+    }else{
+        let _tempLs = colDefineLs.slice(0, index + 1);
+        return _tempLs.reduce((result, {key})=>{
+            if (_get(prevRow, key) != _get(row, key)) {
+                result = false;
+            }
+            return result;
+        }, true);
+    }
+}
 export default {
     name: "a-table",
     components: {vBox},
@@ -76,6 +100,19 @@ export default {
         rowspanKeyLs: {
             default: "",
             type: [String, Array],
+        },
+
+        /**
+         * 单元格合并策略
+         * simple合并策略是只要纵向相邻单元格值相同，就执行合并
+         * strict合并策略会考虑前置单元格的值是否都相同，只有都相同才会合并自身
+         * simple和strict
+         */
+        rowspanMergePolicy:{
+            default:"simple",
+            validator(value) {
+                return ["simple", "strict"].includes(value)
+            }
         },
 
         name: String,
@@ -159,7 +196,7 @@ export default {
         },
 
         slotColumns() {
-            return (this.tColumns || []).filter(el => el.slot);
+            return (this.columns || []).filter(el => el.slot);
         }
     },
 
@@ -228,21 +265,22 @@ export default {
                     m.__rowspanCache.forEach(cb => {
                         const {key, index, column} = cb;
                         let _data = Array(data.length).fill(0);
-                        data.reduce((ret, row, _index) => {
+                        data.reduce((prevToken, row, _index) => {
                             let value = row[key];
-
-                            if (ret.value == value) {
-                                ret.count++;
-                                _data[ret.point] = ret.count;
+                            const willMerge = judgeCellMergeHelper1(m.__rowspanCache, prevToken.row, row, cb, "strict"!=m.rowspanMergePolicy);
+                            if (willMerge) {
+                                prevToken.count++;
+                                _data[prevToken.point] = prevToken.count;
                             } else {
-                                ret.count = 1;
-                                ret.point = _index;
+                                prevToken.count = 1;
+                                prevToken.point = _index;
                                 _data[_index] = 1;
                             }
 
-                            ret.value = value;
-                            return ret;
-                        }, {count: 1, value: "", point: 0});
+                            prevToken.value = value;
+                            prevToken.row = row;
+                            return prevToken;
+                        }, {count: 1, value: "", point: 0, row:""});
                         cb.data = _data;
                     });
                 }
