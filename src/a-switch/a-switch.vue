@@ -2,13 +2,14 @@
     .a-switch-comp(:class="{sleep:sleeping, disabled}" @click="handlerClick")
         slot(name="start" :title="title")
             span.pr05(v-if="title"): b(v-text="title")
+        slot(v-if="!checkbox")
         Checkbox(
             ref="switcher"
             v-if="checkbox"
             v-bind="attrs"
             @input="handlerChange($event)"
             @click.native.stop="noop"
-        )
+        ): slot
         template(v-else): i-switch(
             ref="switcher"
             v-if="attrs"
