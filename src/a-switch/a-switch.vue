@@ -2,7 +2,7 @@
     .a-switch-comp(:class="{sleep:sleeping, disabled}" @click="handlerClick")
         slot(name="start" :title="title")
             span.pr05(v-if="title"): b(v-text="title")
-        slot(v-if="!checkbox")
+
         Checkbox(
             ref="switcher"
             v-if="checkbox"
@@ -16,10 +16,11 @@
             v-bind="attrs"
             @input="handlerChange"
             @click.native.stop="noop"
-        )
+        ).mr05
             span.__label(slot="open")   {{onLabel}}
             span.__label(slot="close")  {{offLabel}}
         slot(name="end" :title="title")
+        slot(v-if="!checkbox")
 </template>
 <script>
 
