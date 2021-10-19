@@ -8840,10 +8840,10 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
 
-vue-iplus@^2.0.35:
-  version "2.0.35"
-  resolved "https://registry.nlark.com/vue-iplus/download/vue-iplus-2.0.35.tgz?cache=0&sync_timestamp=1625652035100&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvue-iplus%2Fdownload%2Fvue-iplus-2.0.35.tgz#869696fa8d254f1f24529934516cf7b1d754fbb2"
-  integrity sha1-hpaW+o0lTx8kUpk0UWz3sddU+7I=
+vue-iplus@^2.0.39:
+  version "2.0.39"
+  resolved "https://registry.yarnpkg.com/vue-iplus/-/vue-iplus-2.0.39.tgz#15e598798f1feb9cad07a3804c867e0e135a442d"
+  integrity sha512-+fu0jKSIwEr3597yNBAlHcuAD+6AqNvA/x0etLISWbdMy5wsHLoHOePyHmPSCVhUdCBSvyP7gPQOd/fValIj9Q==
   dependencies:
     browser-image-size "^1.1.0"
     ipro "^1.0.65"
