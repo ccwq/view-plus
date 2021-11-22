@@ -16,12 +16,29 @@
                 :handler="selected=>selected?inputHandler(el,value):(_=>_)"
             )
 
+
+    //普通的select
+    select.a-select-comp(
+        :value="val"
+        @input="inputHandler"
+        :disabled="disabled"
+        :transfer="transfer"
+        v-else-if="useNativeSelect"
+        v-bind="attrs"
+    )
+        option(
+            v-for="el, index in ls"
+            :key="index"
+            :value="el.value + ''"
+        ) {{el.name}}
+
+    //view-design的Select
     Select.a-select-comp(
         :value="val"
         @input="inputHandler"
         :disabled="disabled"
         :transfer="transfer"
-        v-else
+        v-else="useNativeSelect"
         v-bind="attrs"
     )
         Option(
@@ -29,9 +46,6 @@
             :key="index"
             :value="el.value + ''"
         ) {{el.name}}
-
-
-
 </template>
 <script>
 
@@ -57,6 +71,16 @@ export default {
     defaultLs:"",
 
     props:{
+
+
+        useNativeSelect:{
+            type:Boolean,
+
+            //由于view-design存在的一个bug,在option内容更新之后，
+            // 选择当前已经选中的列表之后,竟然显示上一次option数据变更之前的展示值
+            //使用该选项规避
+            defualt:false,
+        },
 
         //内置属性设置
         selectorAttrs:{
@@ -217,9 +241,7 @@ export default {
                     m.valueField,
                     typeof ls == "string"
                 );
-
                 m.ls = _ls;
-
                 m.setValue(m.value, true);
             }
         },
@@ -288,6 +310,7 @@ export default {
 
         inputHandler(value) {
             const m = this;
+            value = _.get(value, "target.value", value);
 
             //radio模式，取消选择无效
             if(m.radioMode && !value){
