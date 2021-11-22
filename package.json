@@ -17,7 +17,7 @@
     "dependencies": {
         "ipro": "^1.0.65",
         "jquery": "^3.6.0",
-        "lodash": "^4.17.15",
+        "lodash": "^4.17.21",
         "tree-crawl": "^1.0.5",
         "vue-iplus": "^2.0.39"
     },
