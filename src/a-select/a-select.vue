@@ -25,6 +25,7 @@
         :transfer="transfer"
         v-else-if="useNativeSelect"
         v-bind="attrs"
+        ref="nativeSelect"
     )
         option(
             v-for="el, index in ls"
@@ -71,8 +72,6 @@ export default {
     defaultLs:"",
 
     props:{
-
-
         useNativeSelect:{
             type:Boolean,
 
@@ -243,6 +242,10 @@ export default {
                 );
                 m.ls = _ls;
                 m.setValue(m.value, true);
+                const nativeSelect = m.$refs.nativeSelect;
+                if (nativeSelect) {
+                    m.$nextTick(__=>nativeSelect.value = m.val)
+                }
             }
         },
 
