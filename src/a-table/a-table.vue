@@ -26,6 +26,7 @@
 <script>
 import vBox from "vue-iplus/src/comp/v-box"
 import _isEqual from "lodash/isEqual";
+import isPlainObject from "lodash/isPlainObject";
 import _get from "lodash/get";
 import {columnDef} from "../index";
 
@@ -190,7 +191,7 @@ export default {
                     } else {
                         m.selectIndex = -1;
                     }
-                    m.update_selectRow(cur || "");
+                    m.updateSelectRow(cur || "");
                 }
             }
         },
@@ -285,23 +286,32 @@ export default {
                     });
                 }
 
+                let oldDataLs = m.dataLs;
                 m.dataLs = ret;
 
                 //第一次默认选择相关
                 let defSelRow = _get(data, m.defaultSelectedIndex);
-
-                //当前没有选择状态//并且默认选择有值
-                if (!m.selectRow && defSelRow) {
-                    m.update_selectRow(defSelRow);
+                if (m.selectRow==-1) {
+                    //并且默认选择有值
+                    if (defSelRow) {
+                        m.updateSelectRow(defSelRow);
                     m.selectIndex = m.defaultSelectedIndex;
                 }
-
+                }else{
+                    let sindex = m.getSelectRowIndex();
+                    if (sindex == -1) {
+                        sindex = m.selectIndex;
+                    }
+                    if (sindex == -1) {
+                        sindex == m.defaultSelectedIndex;
+                    }
                 //保持选择
-                if (m.keepSelected && m.selectMode) {
-                    let el = ret[m.selectIndex];
+                    if (m.keepSelected) {
+                        let el = ret[sindex];
                     if (el) {
                         el._highlight = true;
-                        m.update_selectRow(el);
+                            m.updateSelectRow(el);
+                        }
                     }
                 }
             },
@@ -312,11 +322,51 @@ export default {
             handler(value) {
                 const m = this;
                 m.selectMode = value !== "-1";
+                const rowIndex = m.dataLs.findIndex(el => {
+                    let targetId
+                    if (typeof value == "number" || typeof value == "string") {
+                        targetId = value;
+                    } else {
+                        targetId = _get(value, m.mainKey);
+                    }
+                    return el[m.mainKey] == targetId;
+                });
+                if (rowIndex!=-1) {
+                    const row = m.dataLs[rowIndex];
+                    const lastSelectRowIndex = m.dataLs.findIndex(el => el._highlight);
+                    if (lastSelectRowIndex != -1) {
+                        m.dataLs.splice(lastSelectRowIndex, 1, {
+                            ...m.dataLs[lastSelectRowIndex],
+                            _highlight:false
+                        });
+                    }
+                    m.dataLs.splice(rowIndex, 1, {
+                        ...row,
+                        _highlight:true,
+                    })
+                }
             }
         },
     },
 
     methods: {
+        getSelectRowIndex(list) {
+            const m = this;
+            const {selectRow} = m;
+            if (!list) {
+                list = m.dataLs;
+            }
+            let id;
+            if (selectRow == -1) {
+                return -1;
+            }else if(isPlainObject(selectRow)){
+                id = selectRow[m.mainKey];
+            //string or number
+            }else{
+                id = selectRow;
+            }
+            return list.findIndex(el => el[m.mainKey] == id);
+        },
 
         spanMethodCallback({row: r, column: c, rowIndex, columnIndex}) {
             const m = this;
@@ -329,9 +379,7 @@ export default {
                 }
             }
         },
-
-
-        update_selectRow(row) {
+        updateSelectRow(row) {
             const m = this;
 
             //避免无效改版
